@@ -2,6 +2,7 @@
 *xmf
 *h5
 *.png
+*.avi
 *.svg
 *.npy
 /CMakeFiles
