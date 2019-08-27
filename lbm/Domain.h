@@ -150,6 +150,8 @@ public:
                            ///< The collide step of LBM with MRT
     void   CollideSRT();                                                           ///< The collide step of LBM for single component simulations
     void   CollideSRTGamma();
+    void   CollideMRTGamma();
+    void   CollideTRTGamma();
     void   Stream();
     void   BounceBack(bool calcF);
     void   BounceBackLIBB(bool calcF);
@@ -262,6 +264,7 @@ public:
     bool IsF;
     bool IsFt;
     bool Isq;
+    bool IsOutH5;
     Vec3_t ***VelP;
     Vec3_t ***Flbm;
     double ***Gamma;
@@ -323,6 +326,7 @@ inline Domain::Domain(LBMethod TheMethod, CollideMethod TheMethodC,  double Then
     Rho0        = 1.0;
     Ncells      = Ndim(0)*Ndim(1)*Ndim(2);
     IsFirstTime = true;
+    IsOutH5     = true;
     Method = TheMethod;
     MethodC = TheMethodC;
     Nu = nu[0];
@@ -357,8 +361,10 @@ inline Domain::Domain(LBMethod TheMethod, CollideMethod TheMethodC,  double Then
             Inv(M,Minv);
             
             double s = 1.0/Tau;
+            double ss = 1.0/(0.25/(Tau-0.5)+0.5);
             S.Resize(Nneigh);
-            S = 1.0,1.4,1.4,1.0,1.2,1.0,1.2,s,s;
+            // S = 1.0,1.4,1.4,1.0,1.2,1.0,1.2,s,s;
+            S = 1.0,s,s,ss,ss,ss,ss,s,s;
             ptr2collide = &LBM::Domain::CollideMRT;
             
         }

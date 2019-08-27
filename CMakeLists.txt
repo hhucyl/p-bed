@@ -25,6 +25,8 @@ INCLUDE(${MECHSYSSANDBOX_SOURCE_DIR}/UseMECHSYS.cmake)
 SET(PROGS
     test_pbed
     test_pbed_rw
+    test_pbed_i
+    test_pbed_cp
 
 )
 

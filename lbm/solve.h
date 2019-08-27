@@ -93,11 +93,13 @@ inline void Domain::SolveP(double Tf, double dtout, char const * TheFileKey, ptD
     {
         if (Time>=tout)
         {
+            if(IsOutH5)
+            {
+                String fn;
+                fn.Printf("%s_%04d", TheFileKey, idx_out);
             
-            String fn;
-            fn.Printf("%s_%04d", TheFileKey, idx_out);
-            
-            WriteXDMF(fn.CStr());
+                WriteXDMF(fn.CStr());
+            }
             idx_out++;
             
             if (ptReport!=NULL) (*ptReport) ((*this), UserData); 
@@ -120,7 +122,8 @@ inline void Domain::SolveP(double Tf, double dtout, char const * TheFileKey, ptD
         }
 
         //collide and streaming
-        CollideSRTGamma();
+        // CollideSRTGamma();
+        CollideTRTGamma();
         Stream();
         BounceBack(false);
         CalcProps();

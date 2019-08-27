@@ -255,6 +255,145 @@ inline void Domain::CollideMRT()
 
 }
 
+inline void Domain::CollideMRTGamma()
+{
+    if(Time<0.5) std::cout<<"--- "<<"MRTGA"<<" ---"<<std::endl;    
+    size_t nx = Ndim(0);
+    size_t ny = Ndim(1);
+    size_t nz = Ndim(2);
+    #ifdef USE_OMP
+    #pragma omp parallel for schedule(static) num_threads(Nproc)
+    #endif
+    for (size_t ix=0;ix<nx;ix++)
+    for (size_t iy=0;iy<ny;iy++)
+    for (size_t iz=0;iz<nz;iz++)
+    {
+        if (!IsSolid[ix][iy][iz])
+        {
+            double rho = Rho[ix][iy][iz];
+            Vec3_t vel = Vel[ix][iy][iz];
+            double *f = F[ix][iy][iz];
+            double *m = Ftemp[ix][iy][iz];
+            double fneq[Nneigh];
+            int n=Nneigh,mm=1;
+            double a = 1.0,b = 0.0;
+            dgemv_("N",&n,&n,&a,M.data,&n,f,&mm,&b,m,&mm);
+            
+            
+            (this->*ptr2meq)(m,rho,vel);
+            
+            dgemv_("N",&n,&n,&a,Minv.data,&n,m,&mm,&b,fneq,&mm);
+            
+            double Bn = (Gamma[ix][iy][iz]*(Tau-0.5))/((1.0-Gamma[ix][iy][iz])+(Tau-0.5));
+            //Bn = Gamma[ix][iy][iz];
+            
+            bool valid = true;
+            double alphal = 1.0;
+            Vec3_t VelPt(0,0,0);
+            double alphat = 1.0;
+            size_t num = 0;
+            while (valid)
+            {
+                num++;
+                alphal = alphat;
+                valid = false;
+                for (size_t k=0; k<Nneigh; k++)
+                {
+                    double ForceTerm = dt*3.0*W[k]*dot(BForce[ix][iy][iz],C[k]);
+                    // Vec3_t BFt(0.0, 0.0, 0.0);
+                    // BFt = 3.0*(C[k] - vel)/(Cs*Cs) + 9.0*dot(C[k],vel)/(Cs*Cs*Cs*Cs)*C[k]; 
+                    // double ForceTerm = dt*(1 - 1.0/(2.0*Tau))*W[k]*dot(BFt,BForce[ix][iy][iz]); 
+                    // Ftemp[ix][iy][iz][k] = F[ix][iy][iz][k]-fneq[k]+ForceTerm;
+                    double Fvpp     = Feq(Op[k],rho,VelPt);
+                    double Fvp      = Feq(k    ,rho,VelPt);
+                    double Omega    = F[ix][iy][iz][Op[k]] - Fvpp - (F[ix][iy][iz][k] - Fvp);
+                    double Noneq = (1-Bn)*fneq[k] - Bn*Omega - ForceTerm;
+                    Ftemp[ix][iy][iz][k] = F[ix][iy][iz][k] - alphal*Noneq;
+                    if(Ftemp[ix][iy][iz][k]<-1.0e12&&num<2) 
+                    {
+                        double temp = std::fabs(F[ix][iy][iz][k]/Noneq);
+                        if(temp<alphat) alphat = temp;
+                        valid = true;
+                    }
+
+                }
+            }
+            
+
+            
+        }
+        else
+        {
+            for (size_t k=0;k<Nneigh;k++)
+            {
+                Ftemp[ix][iy][iz][k] = F[ix][iy][iz][Op[k]];
+            }
+        }
+    }
+
+}
+
+inline void Domain::CollideTRTGamma()
+{
+    if(Time<0.5) std::cout<<"--- "<<"TRTGA"<<" ---"<<std::endl;    
+    size_t nx = Ndim(0);
+    size_t ny = Ndim(1);
+    size_t nz = Ndim(2);
+    #ifdef USE_OMP
+    #pragma omp parallel for schedule(static) num_threads(Nproc)
+    #endif
+    for (size_t ix=0;ix<nx;ix++)
+    for (size_t iy=0;iy<ny;iy++)
+    for (size_t iz=0;iz<nz;iz++)
+    {
+        if (!IsSolid[ix][iy][iz])
+        {
+            double rho = Rho[ix][iy][iz];
+            Vec3_t vel = Vel[ix][iy][iz];
+            double *f = F[ix][iy][iz];
+            double w1 = 1.0/Tau;
+            double w2 = 1.0/(0.25/(Tau-0.5)+0.5);
+            
+            double Bn = (Gamma[ix][iy][iz]*(Tau-0.5))/((1.0-Gamma[ix][iy][iz])+(Tau-0.5));
+            //Bn = Gamma[ix][iy][iz];
+            
+            Vec3_t VelPt(0,0,0);
+            for (size_t k=0; k<Nneigh; k++)
+            {
+                double ForceTerm = dt*3.0*W[k]*dot(BForce[ix][iy][iz],C[k]);
+                // Vec3_t BFt(0.0, 0.0, 0.0);
+                // BFt = 3.0*(C[k] - vel)/(Cs*Cs) + 9.0*dot(C[k],vel)/(Cs*Cs*Cs*Cs)*C[k]; 
+                // double ForceTerm = dt*(1 - 1.0/(2.0*Tau))*W[k]*dot(BFt,BForce[ix][iy][iz]); 
+                // Ftemp[ix][iy][iz][k] = F[ix][iy][iz][k]-fneq[k]+ForceTerm;
+                double Fvpp     = Feq(Op[k],rho,VelPt);
+                double Fvp      = Feq(k    ,rho,VelPt);
+                double Omega    = F[ix][iy][iz][Op[k]] - Fvpp - (F[ix][iy][iz][k] - Fvp);
+                double f1       = 0.5*(f[k]+f[Op[k]]);
+                double f2       = 0.5*(f[k]-f[Op[k]]);
+                double feq1     = 0.5*(Feq(k,rho,vel)+Feq(Op[k],rho,vel));
+                double feq2     = 0.5*(Feq(k,rho,vel)-Feq(Op[k],rho,vel));
+                double fneq     = w1*(f1-feq1)+w2*(f2-feq2);
+                double Noneq    = (1-Bn)*fneq - Bn*Omega - ForceTerm;
+                Ftemp[ix][iy][iz][k] = F[ix][iy][iz][k] - 1.0*Noneq;
+                
+
+            }
+            
+            
+
+            
+        }
+        else
+        {
+            for (size_t k=0;k<Nneigh;k++)
+            {
+                Ftemp[ix][iy][iz][k] = F[ix][iy][iz][Op[k]];
+            }
+        }
+    }
+
+}
+
 inline void Domain::CollideMRTLES()
 {
     size_t nx = Ndim(0);

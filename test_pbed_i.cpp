@@ -140,35 +140,24 @@ double random(double a, double b)
 int main (int argc, char **argv) try
 {
     std::srand((unsigned)time(NULL));    
-    size_t Nproc = 10;
-    int Nx = 10;
-    int Ny = 5;
+    size_t Nproc = 5;
     size_t Rn = 10;
     double Re = 5e3;
-    size_t H = 50;
+    size_t H = 80;
     double vmax = 0.15;
     double nu = 2.0/3.0*vmax*H/Re;
     std::cout<<"nu "<<nu<<std::endl;
 
-    double gap = 2;
-    double mag = 1;
     if(argc>=2) Nproc = atoi(argv[1]);
     
-    int gapn = std::ceil(gap*Nx);
-    int gapny = std::ceil(gap*Ny);
-    std::cout<<"extra gap n "<<gapn<<std::endl;
-    size_t nx = 2*Rn*Nx+gapn;
-    size_t ny = 2*Rn*Ny+gapny+H;
+    size_t nx = 250;//caution may vary
+    size_t ny = 250+H;
     size_t nz = 1;
     double dx = 1.0;
     double dt = 1.0;
     double R = (double) Rn;
-    double Ga = 0.0;
     double rho = 1.0;
     double rhos = 2.0;
-    double gy = Ga*Ga*nu*nu/((8*R*R*R)*(rhos/rho-1));
-    std::cout<<"gy = "<<gy<<std::endl;
-
     std::cout<<"R = "<<R<<std::endl;
     //nu = 1.0/30.0;
     std::cout<<nx<<" "<<ny<<" "<<nz<<std::endl;
@@ -178,8 +167,6 @@ int main (int argc, char **argv) try
     my_dat.nu = nu;
     my_dat.g = 2.0*nu*vmax/((double)H*(double)H);
     my_dat.R = R;
-    my_dat.gap = gap;
-    my_dat.Ny = Ny;
     Vec3_t g0(my_dat.g,0.0,0.0);
     my_dat.g0 = g0;
     my_dat.V = 0;
@@ -191,47 +178,43 @@ int main (int argc, char **argv) try
     my_dat.rhos = rhos;
     
     
-    Vec3_t pos(R+gap,R,0.0);
-    Vec3_t dxp(0.0,0.0,0.0);
+    Vec3_t pos(0.0,0.0,0.0);
     Vec3_t v(0.0,0.0,0.0);
     Vec3_t w(0.0,0.0,0.0);
     //DEM
     dom.dtdem = 0.01*dt;
-    int pnum = 0;
     //fixed
-    for(int ip=0; ip<Nx; ++ip)
-    {
-        // std::cout<<pos<<std::endl;
-        dom.Particles.push_back(DEM::Disk(pnum, pos, v, w, rhos, R, dom.dtdem));
-        dom.Particles[ip].FixVeloc();
-        dxp = 2.0*R+gap,0.0,0.0;
-        pos = pos+dxp;
-        pnum++;
-        my_dat.Y.push_back(R);
-    }
-    //move
-    for(int ipy=0; ipy<Ny-1; ++ipy)
-    {
-        pos = R+gap,(2*ipy+3)*R + (ipy+1)*gap,0.0;
-        for(int ipx=0; ipx<Nx; ++ipx)
+    char const *infilename = "circle_mono.txt";
+    String fn;
+    fn.Printf("%s",infilename);
+    std::fstream ifile(fn.CStr(),std::ios::in);
+    int N = 0;
+    double fi = 0;
+    if(!ifile.fail()){
+        ifile>>fi;
+        ifile>>N;
+        std::cout<<"porosity "<<fi<<"Number of Circle "<<N<<std::endl;
+        for(size_t i=0; i<N; ++i)
         {
-            Vec3_t dxr(random(-mag,mag),random(-mag,mag),0.0);
-            // Vec3_t dxr(0.0,0.0,0.0);
-            dom.Particles.push_back(DEM::Disk(-pnum, pos+dxr, v, w, rhos, R, dom.dtdem));
-            // std::cout<<pos(0)<<" "<<pos(1)<<std::endl;
-            dxp = 2.0*R+gap,0.0,0.0;
-            pos = pos+dxp;
-            pnum++;
+            double x;
+            double y;
+            double r;
+            ifile>>x>>y>>r;
+            pos = x,y,0;
+            dom.Particles.push_back(DEM::Disk(i, pos, v, w, rhos, r, dom.dtdem));
+            dom.Particles[i].FixVeloc();
+            my_dat.Y.push_back(y);
         }
-        my_dat.Y.push_back(pos(1));
-
+    }else{
+        std::cout<<"READ TXT ERRO!!!!"<<std::endl;
     }
+
 
     std::cout<<"Particles number = "<<dom.Particles.size()<<std::endl;
     
     for(int ip=0; ip<(int) dom.Particles.size(); ++ip)
     {
-        dom.Particles[ip].Ff = 0.0, -M_PI*R*R*(rhos/rho-1)*gy, 0.0;
+        dom.Particles[ip].Ff = 0.0, 0.0, 0.0;
         dom.Particles[ip].Kn = 5;
         dom.Particles[ip].Gn = -0.3;
         dom.Particles[ip].Kt = 2.5;
@@ -254,15 +237,15 @@ int main (int argc, char **argv) try
     
     // dom.Initial(rho,v0,g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed1_0999.h5",g0);
+    // dom.InitialFromH5("test_pbed_0999.h5",g0);
 
 
-    double Tf = 2e6;
-    double dtout = 2e3;
+    double Tf = 3;
+    double dtout = 1;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolveP( Tf, dtout, "test_pbed2", Setup, NULL);
+    dom.SolveP( Tf, dtout, "test_pbed_i", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH
