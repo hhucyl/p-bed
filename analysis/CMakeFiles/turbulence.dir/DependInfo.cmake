@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/pzhang/chen/p-bed/analysis/turbulence.cpp" "/home/pzhang/chen/p-bed/analysis/CMakeFiles/turbulence.dir/turbulence.cpp.o"
+  "/home/user/p-bed/analysis/turbulence.cpp" "/home/user/p-bed/analysis/CMakeFiles/turbulence.dir/turbulence.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -22,14 +22,14 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/pzhang/pkg/hdf5-1.8.15-patch1/src"
-  "/home/pzhang/pkg/hdf5-1.8.15-patch1/hl/src"
-  "/home/pzhang/pkg/blitz-0.9"
-  "/home/pzhang/pkg/voro++-0.4.5/src"
-  "/home/pzhang/pkg/tetgen1.4.3"
-  "/home/pzhang/pkg/triangle1.6"
-  "/home/pzhang/pkg/igraph-0.5.4/include"
-  "/home/pzhang/mechsys"
+  "/home/user/pkg/hdf5-1.8.15-patch1/src"
+  "/home/user/pkg/hdf5-1.8.15-patch1/hl/src"
+  "/home/user/pkg/blitz-0.9"
+  "/home/user/pkg/voro++-0.4.5/src"
+  "/home/user/pkg/tetgen1.4.3"
+  "/home/user/pkg/triangle1.6"
+  "/home/user/pkg/igraph-0.5.4/include"
+  "/home/user/mechsys"
   )
 
 # Targets to which this target links.

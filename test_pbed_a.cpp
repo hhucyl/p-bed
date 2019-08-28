@@ -142,16 +142,19 @@ int main (int argc, char **argv) try
     std::srand((unsigned)time(NULL));    
     size_t Nproc = 5;
     size_t Rn = 10;
+    double pore = 2;
     double Re = 5e3;
-    size_t H = 80;
+    size_t H = 150;
     double vmax = 0.15;
     double nu = 2.0/3.0*vmax*H/Re;
+    size_t Nb = 5;
     std::cout<<"nu "<<nu<<std::endl;
 
     if(argc>=2) Nproc = atoi(argv[1]);
     
     size_t nx = 250;//caution may vary
-    size_t ny = 250+H;
+    double Rb = ((double) nx)/((double) Nb)*0.5;
+    size_t ny = 250+H+std::ceil(Rb*2)+2;
     size_t nz = 1;
     double dx = 1.0;
     double dt = 1.0;
@@ -159,6 +162,8 @@ int main (int argc, char **argv) try
     double rho = 1.0;
     double rhos = 2.0;
     std::cout<<"R = "<<R<<std::endl;
+    std::cout<<"Rb = "<<Rb<<std::endl;
+
     //nu = 1.0/30.0;
     std::cout<<nx<<" "<<ny<<" "<<nz<<std::endl;
     LBM::Domain dom(D2Q9,MRT, nu, iVec3_t(nx,ny,nz),dx,dt);
@@ -208,6 +213,19 @@ int main (int argc, char **argv) try
     }else{
         std::cout<<"READ TXT ERRO!!!!"<<std::endl;
     }
+    //armor
+    double py = *std::max_element(my_dat.Y.begin(),my_dat.Y.end())+ my_dat.R;
+    for(size_t i=0; i<Nb; ++i)
+    {
+        double x,y;
+        y = py+Rb;
+        x = (2*i+1)*Rb;
+        pos = x,y,0;
+        Vec3_t dxp(random(-1,1),random(-1,1),0);
+        dom.Particles.push_back(DEM::Disk(i, pos+dxp, v, w, rhos, Rb, dom.dtdem));
+        dom.Particles[i].FixVeloc();
+        my_dat.Y.push_back(y);
+    }
 
 
     std::cout<<"Particles number = "<<dom.Particles.size()<<std::endl;
@@ -221,7 +239,7 @@ int main (int argc, char **argv) try
         dom.Particles[ip].Mu = 0.4;
         dom.Particles[ip].Eta = 0.0;
         dom.Particles[ip].Beta = 0.0;
-        dom.Particles[ip].Rh = 0.8*R;
+        dom.Particles[ip].Rh = dom.Particles[ip].R-pore;
         dom.Particles[ip].FixVeloc();
 
     }
@@ -240,12 +258,12 @@ int main (int argc, char **argv) try
     // dom.InitialFromH5("test_pbed_0999.h5",g0);
 
 
-    double Tf = 3e3;
-    double dtout = 1e3;
+    double Tf = 3;
+    double dtout = 1;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolveP( Tf, dtout, "test_pbed_i", Setup, NULL);
+    dom.SolveP( Tf, dtout, "test_pbed_a1", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH
