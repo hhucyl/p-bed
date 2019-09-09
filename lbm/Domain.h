@@ -363,8 +363,8 @@ inline Domain::Domain(LBMethod TheMethod, CollideMethod TheMethodC,  double Then
             double s = 1.0/Tau;
             double ss = 1.0/(0.25/(Tau-0.5)+0.5);
             S.Resize(Nneigh);
-            // S = 1.0,1.4,1.4,1.0,1.2,1.0,1.2,s,s;
-            S = 1.0,s,s,ss,ss,ss,ss,s,s;
+            S = 1.0,1.4,1.4,1.0,1.2,1.0,1.2,s,s;
+            //S = 1.0,s,s,ss,ss,ss,ss,s,s;
             ptr2collide = &LBM::Domain::CollideMRT;
             
         }

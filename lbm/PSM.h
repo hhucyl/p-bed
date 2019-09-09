@@ -126,10 +126,10 @@ inline void Domain::adddiskG_sub(DEM::Disk *Pa,size_t ip)
     size_t nx = Ndim(0);
     size_t ny = Ndim(1);
     // size_t nz = Ndim(2);
-    int ixs = std::max(std::floor(Pa->X(0) - Pa->Rh - 3*dx),0.0);
-    int ixe = std::min(std::ceil(Pa->X(0) + Pa->Rh + 3*dx),(double) nx);
-    int iys = std::max(std::floor(Pa->X(1) - Pa->Rh - 3*dx),0.0);
-    int iye = std::min(std::ceil(Pa->X(1) + Pa->Rh + 3*dx),(double) ny);
+    int ixs = std::max(std::floor(Pa->X(0) - Pa->Rh - 1*dx),0.0);
+    int ixe = std::min(std::ceil(Pa->X(0) + Pa->Rh + 1*dx),(double) nx);
+    int iys = std::max(std::floor(Pa->X(1) - Pa->Rh - 1*dx),0.0);
+    int iye = std::min(std::ceil(Pa->X(1) + Pa->Rh + 1*dx),(double) ny);
     // std::cout<<ixs<<" "<<ixe<<" "<<iys<<" "<<iye<<std::endl; 
     for(int ix=ixs; ix<ixe; ++ix)
     for(int iy=iys; iy<iye; ++iy) 

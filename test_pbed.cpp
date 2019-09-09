@@ -89,7 +89,7 @@ void Initial(LBM::Domain &dom, void *UD)
     double py = *std::max_element(dat.Y.begin(),dat.Y.end())+dat.R;
     double H = ((double) ny-1) - py;
     std::cout<<"py = "<<py<<" H = "<<H<<std::endl;
-    std::cout<<"max vel "<<dat.g/(2.0*dat.nu)*H*H/4.0<<std::endl;
+    std::cout<<"max vel "<<dat.g/(2.0*dat.nu)*H*H<<std::endl;
     for(size_t ix=0; ix<nx; ++ix)
     for(size_t iy=0; iy<ny; ++iy)
     {
@@ -142,27 +142,28 @@ int main (int argc, char **argv) try
     std::srand((unsigned)time(NULL));    
     size_t Nproc = 10;
     int Nx = 10;
-    int Ny = 5;
+    int Ny = 6;
     size_t Rn = 10;
-    double Re = 5e3;
+    double Re = 1e4;
     size_t H = 50;
-    double vmax = 0.15;
-    double nu = 2.0/3.0*vmax*H/Re;
-    std::cout<<"nu "<<nu<<std::endl;
+    double nu = 1e-4;
+    double vmax = nu*Re/H*1.5;
+    std::cout<<"vmax "<<vmax<<std::endl;
 
     double gap = 2;
     double mag = 1;
     if(argc>=2) Nproc = atoi(argv[1]);
     
+    double R = (double) Rn+0.2;
     int gapn = std::ceil(gap*Nx);
     int gapny = std::ceil(gap*Ny);
     std::cout<<"extra gap n "<<gapn<<std::endl;
-    size_t nx = 2*Rn*Nx+gapn;
-    size_t ny = 2*Rn*Ny+gapny+H;
+    size_t nx = std::ceil(2*R*Nx)+gapn;
+    size_t ny = std::ceil(2*R*Ny)+gapny+H;
     size_t nz = 1;
     double dx = 1.0;
     double dt = 1.0;
-    double R = (double) Rn;
+    
     double Ga = 0.0;
     double rho = 1.0;
     double rhos = 2.0;
@@ -212,7 +213,7 @@ int main (int argc, char **argv) try
     //move
     for(int ipy=0; ipy<Ny-1; ++ipy)
     {
-        pos = R+gap,(2*ipy+3)*R + (ipy+1)*gap,0.0;
+        pos = R+gap*0.5,(2*ipy+3)*R + (ipy+1)*gap,0.0;
         for(int ipx=0; ipx<Nx; ++ipx)
         {
             Vec3_t dxr(random(-mag,mag),random(-mag,mag),0.0);
@@ -254,15 +255,15 @@ int main (int argc, char **argv) try
     
     // dom.Initial(rho,v0,g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed1_0999.h5",g0);
+    // dom.InitialFromH5("test_pbed1_0017.h5",g0);
 
 
-    double Tf = 2e6;
-    double dtout = 2e3;
+    double Tf = 5e7;
+    double dtout = 5e4;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolveP( Tf, dtout, "test_pbed2", Setup, NULL);
+    dom.SolveP( Tf, dtout, "test_pbed1", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH

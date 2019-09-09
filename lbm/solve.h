@@ -269,7 +269,8 @@ inline void Domain::SolvePRW(double Tf, double dtout, char const * TheFileKey, p
         }
 
         //collide and streaming
-        CollideSRTGamma();
+        // CollideSRTGamma();
+        CollideTRTGamma();
         Stream();
         BounceBack(false);
         CalcProps();

@@ -10,10 +10,16 @@ class Particle
 {
     public:
     Particle(Vec3_t &X, int d, double dm);
+    int Tag;
+    double Time;
+    double Tlimt;
+
     Vec3_t X;
     Vec3_t Xb;
     int D;
     double Dm;
+    std::vector<double> TimeArray;
+    std::vector<double> OutTimeArray;
     void Move(std::vector<Vec3_t> &VV, std::vector<int> &idx, double dt);
     void Leave(int modexy, Vec3_t &Box);
     void Reflect(Vec3_t &C, double R);
@@ -24,6 +30,9 @@ inline Particle::Particle(Vec3_t &X0, int d, double dm)
     Xb = X;
     D = d;
     Dm = dm;
+    Time = 0;
+    Tlimt = 1e4;
+    Tag = 1;
 }
 
 inline void Particle::Move(std::vector<Vec3_t> &VV, std::vector<int> &idx, double dt)

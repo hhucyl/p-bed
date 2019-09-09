@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import sys
 
-prefix = "/home/pzhang/chen/p-bed/"
+prefix = "/home/user/p-bed/"
 prefix = prefix + ""
 prefix = prefix + "test_pbed_r_"
-num = np.arange(0,1+1)
+num = np.arange(0,999+1)
 Py = 5
 Px = 10
 R = 10

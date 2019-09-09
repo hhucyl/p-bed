@@ -76,6 +76,8 @@ void Setup(LBM::Domain &dom, void *UD)
     // }
     
     // std::cout<<g(0)<<std::endl;
+    
+
 }
 
 
@@ -140,11 +142,11 @@ double random(double a, double b)
 int main (int argc, char **argv) try
 {
     std::srand((unsigned)time(NULL));    
-    size_t Nproc = 10;
+    size_t Nproc = 12;
     int Nx = 10;
     int Ny = 5;
     size_t Rn = 10;
-    double Re = 5e3;
+    double Re = 1e4;
     size_t H = 50;
     double vmax = 0.15;
     double nu = 2.0/3.0*vmax*H/Re;
@@ -156,7 +158,7 @@ int main (int argc, char **argv) try
     double Dm = nu/1e-6*Dm0;
     std::cout<<"Dm0 = "<<Dm0<<" Dm = "<<Dm<<std::endl;
     //rwP
-    int RWP = 10;
+    int RWP = 20;
     if(argc>=2) Nproc = atoi(argv[0]);
     
     int gapn = std::ceil(gap*Nx);
@@ -259,7 +261,7 @@ int main (int argc, char **argv) try
     
     // dom.Initial(rho,v0,g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed_0999.h5",g0);
+    dom.InitialFromH5("test_pbed2_0999.h5",g0);
 
     //RWParticles
     double py = *std::max_element(my_dat.Y.begin(),my_dat.Y.end())+my_dat.R;
@@ -267,7 +269,7 @@ int main (int argc, char **argv) try
     // std::vector<int> startx{22,65,109,154,199};
     // for(int i=0; i<startx.size(); ++i)
     for(int i=0; i<nx-1; ++i)
-    for(int iy=2; iy<starty; ++iy)
+    for(int iy=22; iy<starty; ++iy)
     {
         // int x1 = startx[i];
         int x1 = i;
@@ -284,6 +286,7 @@ int main (int argc, char **argv) try
         } 
     }
     std::cout<<"RW particles complete "<<std::endl;
+    std::cout<<"RW particles NUM "<<dom.RWParticles.size()<<std::endl;
 
     
 
@@ -293,7 +296,7 @@ int main (int argc, char **argv) try
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolvePRW( Tf, dtout, "test_pbed_r", Setup, NULL);
+    dom.SolvePRW( Tf, dtout, "test_pbed_r2", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH

@@ -10,5 +10,9 @@
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+/analysis/CMakeFiles
+/analysis/CMakeCache.txt
+/analysis/cmake_install.cmake
+/analysis/Makefile
 .vscode
 

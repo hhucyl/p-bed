@@ -5,7 +5,7 @@ import sys
 
 prefix = "/home/user/p-bed/"
 prefix = prefix + ""
-prefix = prefix + "test_pbed2_"
+prefix = prefix + "test_pbed1_"
 num = np.arange(0,999+1)
 Py = 5
 Px = 10
