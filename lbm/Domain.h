@@ -290,7 +290,7 @@ public:
     double dtdem;
     Vec3_t Box;
     int modexy;
-
+    bool IsContinue;
     
 };
 
@@ -327,6 +327,7 @@ inline Domain::Domain(LBMethod TheMethod, CollideMethod TheMethodC,  double Then
     Ncells      = Ndim(0)*Ndim(1)*Ndim(2);
     IsFirstTime = true;
     IsOutH5     = true;
+    IsContinue  = false;
     Method = TheMethod;
     MethodC = TheMethodC;
     Nu = nu[0];

@@ -49,6 +49,7 @@ inline void Domain::Initial(double rho, Vec3_t &v0,  Vec3_t &g0)
 
 inline void Domain::InitialFromH5(char const * TheFileKey, Vec3_t &g0)
 {
+    IsContinue = true;
     String fn(TheFileKey);
     std::cout<<"Initializing From "<<fn.CStr()<<std::endl;
     hid_t file_id = H5Fopen(fn.CStr(),H5F_ACC_RDONLY,H5P_DEFAULT);

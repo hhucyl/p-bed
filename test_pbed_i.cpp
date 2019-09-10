@@ -139,23 +139,30 @@ double random(double a, double b)
   
 int main (int argc, char **argv) try
 {
-    std::srand((unsigned)time(NULL));    
+    std::srand((unsigned)time(NULL)); 
+    int Nx = 10;
+    int Ny = 6;   
     size_t Nproc = 5;
     size_t Rn = 10;
     double Re = 5e3;
-    size_t H = 80;
-    double vmax = 0.15;
-    double nu = 2.0/3.0*vmax*H/Re;
-    std::cout<<"nu "<<nu<<std::endl;
+    size_t H = 50;
+    double nu = 1e-4;
+    double vmax = nu*Re/H*1.5;
+    std::cout<<"vmax "<<vmax<<std::endl;
 
+    double gap = 2;
+    double mag = 1;
     if(argc>=2) Nproc = atoi(argv[1]);
     
-    size_t nx = 250;//caution may vary
-    size_t ny = 250+H;
+    double R = (double) Rn+0.2;
+    int gapn = std::ceil(gap*Nx);
+    int gapny = std::ceil(gap*Ny);
+    std::cout<<"extra gap n "<<gapn<<std::endl;
+    size_t nx = std::ceil(2*R*Nx)+gapn;
+    size_t ny = std::ceil(2*R*Ny)+gapny+H;
     size_t nz = 1;
     double dx = 1.0;
     double dt = 1.0;
-    double R = (double) Rn;
     double rho = 1.0;
     double rhos = 2.0;
     std::cout<<"R = "<<R<<std::endl;
@@ -184,7 +191,7 @@ int main (int argc, char **argv) try
     //DEM
     dom.dtdem = 0.01*dt;
     //fixed
-    char const *infilename = "circle_mono.txt";
+    char const *infilename = "circle_p.txt";
     String fn;
     fn.Printf("%s",infilename);
     std::fstream ifile(fn.CStr(),std::ios::in);
@@ -240,12 +247,12 @@ int main (int argc, char **argv) try
     // dom.InitialFromH5("test_pbed_0999.h5",g0);
 
 
-    double Tf = 3e3;
-    double dtout = 1e3;
+    double Tf = 3;
+    double dtout = 1;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolveP( Tf, dtout, "test_pbed_i", Setup, NULL);
+    dom.SolveP( Tf, dtout, "test_pbed_i1", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH

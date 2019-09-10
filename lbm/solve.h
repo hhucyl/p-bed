@@ -117,7 +117,7 @@ inline void Domain::SolveP(double Tf, double dtout, char const * TheFileKey, ptD
         
          
         //set fluid force
-        if(std::fabs(Time)<1e-6){
+        if(std::fabs(Time)<1e-6 && (!IsContinue)){
             AddDisksG();
         }
 
@@ -264,7 +264,7 @@ inline void Domain::SolvePRW(double Tf, double dtout, char const * TheFileKey, p
         
          
         //set fluid force
-        if(std::fabs(Time)<1e-6){
+        if(std::fabs(Time)<1e-6 && (!IsContinue)){
             AddDisksG();
         }
 
