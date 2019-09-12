@@ -68,7 +68,7 @@ plot(freq,power)
 subplot(313)
 plot(period,power)
 [mp,index] = max(power);
-T = period(index)
+T = getT(kbed)
 
 
 

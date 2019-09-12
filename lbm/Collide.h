@@ -354,8 +354,8 @@ inline void Domain::CollideTRTGamma()
             double w1 = 1.0/Tau;
             double w2 = 1.0/(0.25/(Tau-0.5)+0.5);
             
-            // double Bn = (Gamma[ix][iy][iz]*(Tau-0.5))/((1.0-Gamma[ix][iy][iz])+(Tau-0.5));
-            double Bn = Gamma[ix][iy][iz];
+            double Bn = (Gamma[ix][iy][iz]*(Tau-0.5))/((1.0-Gamma[ix][iy][iz])+(Tau-0.5));
+            // double Bn = Gamma[ix][iy][iz];
             
             Vec3_t VelPt(0,0,0);
             bool valid = true;
@@ -367,6 +367,7 @@ inline void Domain::CollideTRTGamma()
                 num++;
                 alphal = alphat;
                 valid = false;
+                // bool neg = false;
                 for (size_t k=0; k<Nneigh; k++)
                 {
                     double ForceTerm = dt*3.0*W[k]*dot(BForce[ix][iy][iz],C[k]);
@@ -382,16 +383,38 @@ inline void Domain::CollideTRTGamma()
                     double feq1     = 0.5*(Feq(k,rho,vel)+Feq(Op[k],rho,vel));
                     double feq2     = 0.5*(Feq(k,rho,vel)-Feq(Op[k],rho,vel));
                     double fneq     = w1*(f1-feq1)+w2*(f2-feq2);
-                    double Noneq    = (1-Bn)*fneq - Bn*Omega- ForceTerm ;
+                    double Noneq    = (1-Bn)*fneq - Bn*Omega- (1-Bn)*ForceTerm ;
                     Ftemp[ix][iy][iz][k] = F[ix][iy][iz][k] - alphal*Noneq;
-                    if(Ftemp[ix][iy][iz][k]<-1.0e12&&num<2) 
+                    if(Ftemp[ix][iy][iz][k]<-1.0e-12&&num<2) 
+                    // if(Ftemp[ix][iy][iz][k]<-1.0e-12&&Gamma[ix][iy][iz]>1.0e-6) 
                     {
+                        // Ftemp[ix][iy][iz][k] = 0.0;
+                        // std::cout << " " << Time <<" " << iVec3_t(ix,iy,iz) << " " << k << " "<<Bn << std::endl;
+
                         double temp = std::fabs(F[ix][iy][iz][k]/Noneq);
                         if(temp<alphat) alphat = temp;
                         valid = true;
+                        // neg = true;
+                        // break;
                     }
 
                 }
+
+                // if(neg)
+                // {
+                // //     // std::cout << " " << iVec3_t(ix,iy,iz) << " " << k << " " << std::endl;
+                // //     // throw new Fatal("Domain::CollideTRTGA: Distribution funcitons gave negative value, check parameters");
+                //     for (size_t k=0; k<Nneigh; k++)
+                //     {
+                // //         // Ftemp[ix][iy][iz][k] = Feq(k,rho,vel);
+                // //         // Ftemp[ix][iy][iz][k] = F[ix][iy][iz][Op[k]];
+                //         std::cout << " " << Time <<" " << Ftemp[ix][iy][iz][k] << " " << F[ix][iy][iz][k] << " " << std::endl;
+
+
+                //     }
+                //         throw new Fatal("Domain::CollideTRTGA: Distribution funcitons gave negative value, check parameters");
+
+                // }
             }
             
             

@@ -3,8 +3,8 @@ clc
 index = [];
 ik = [];
 for i=1:N
-    kk1 = find(tt{i}(1:end)>1e4);
-    kk2 = find(tt{i}(1:end)<=1e6);
+    kk1 = find(tt{i}(1:end)>1e3);
+    kk2 = find(tt{i}(1:end)<=2e4);
     kk = intersect(kk1,kk2);
     if(numel(kk)>0)%(numel(kk)==0)
         index = [index;i];
@@ -16,18 +16,22 @@ for i=1:N
     
 end
 PDY = [];
+PDX = [];
 DPDY = [];
+DPDX = [];
 pdx=[];
 pdy=[];
-for i=1:1000
+for i=1:numel(index)
     tau = [];
     tau(:,1) = ik{i,1}';
     tau(:,2) = ik{i,2}';
     for j=1:(numel(tau)/2)
         pdx{i,j} = Px(index(i),tau(j,1):tau(j,2));
         pdy{i,j} = Py(index(i),tau(j,1):tau(j,2));
-        PDY = [PDY;pdy{i,j}'];
-        DPDY = [DPDY;diff(pdy{i,j}')];
+        %PDY = [PDY;pdy{i,j}'];
+        %DPDY = [DPDY;diff(pdy{i,j}')];
+        %PDX = [PDX;pdx{i,j}'];
+        %DPDX = [DPDX;diff(pdx{i,j}')];
 %         plot(pdx{i,j},pdy{i,j},'b*')
 %         hold on
 %         axis([0 220 0 150])
