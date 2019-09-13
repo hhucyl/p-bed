@@ -87,6 +87,37 @@ inline void Domain::InitialFromH5(char const * TheFileKey, Vec3_t &g0)
 		nn++;
 	}
     std::cout<<"Fluid Complete"<<std::endl;
+
+    //rwParicles
+    int *Nrwp = new int[1];
+    Nrwp[0] = -1;
+    H5LTread_dataset_int(file_id,"/Nrwp",Nrwp);
+    if(Nrwp[0]>0)
+    {
+        double *RWP = new double[3*Nrwp[0]];
+        H5LTread_dataset_double(file_id,"/RWPposition",RWP);
+        double *RWPb = new double[3*Nrwp[0]];
+        H5LTread_dataset_double(file_id,"/RWPpositionb",RWPb);
+
+        for(int ip=0; ip<Nrwp[0]; ++ip)
+        {
+            Vec3_t xt(RWP[3*ip],RWP[3*ip+1],0);
+            Vec3_t xtb(RWPb[3*ip],RWPb[3*ip+1],0);
+            RWParticles.push_back(RW::Particle(xt,2,0.0));
+            RWParticles.back().Xb = xtb;
+        } 
+        IsRWContinue = true;
+        std::cout<<"Random walk Complete"<<std::endl;
+        std::cout<<"Random walk NUM "<<RWParticles.size()<<std::endl;
+
+        delete[] RWP;
+        delete[] RWPb;
+
+    }
+    delete[] Nrwp;
+
+    
+
     //particle
     int NP = Particles.size(); 
     if(NP>0)

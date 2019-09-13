@@ -291,6 +291,7 @@ public:
     Vec3_t Box;
     int modexy;
     bool IsContinue;
+    bool IsRWContinue;
     
 };
 
@@ -328,6 +329,7 @@ inline Domain::Domain(LBMethod TheMethod, CollideMethod TheMethodC,  double Then
     IsFirstTime = true;
     IsOutH5     = true;
     IsContinue  = false;
+    IsRWContinue  = false;
     Method = TheMethod;
     MethodC = TheMethodC;
     Nu = nu[0];

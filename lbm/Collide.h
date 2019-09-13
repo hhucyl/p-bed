@@ -354,8 +354,8 @@ inline void Domain::CollideTRTGamma()
             double w1 = 1.0/Tau;
             double w2 = 1.0/(0.25/(Tau-0.5)+0.5);
             
-            double Bn = (Gamma[ix][iy][iz]*(Tau-0.5))/((1.0-Gamma[ix][iy][iz])+(Tau-0.5));
-            // double Bn = Gamma[ix][iy][iz];
+            // double Bn = (Gamma[ix][iy][iz]*(Tau-0.5))/((1.0-Gamma[ix][iy][iz])+(Tau-0.5));
+            double Bn = Gamma[ix][iy][iz];
             
             Vec3_t VelPt(0,0,0);
             bool valid = true;

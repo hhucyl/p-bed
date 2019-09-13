@@ -261,33 +261,42 @@ int main (int argc, char **argv) try
     
     // dom.Initial(rho,v0,g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed1_0999.h5",g0);
+    dom.InitialFromH5("test_pbed_r1_0001.h5",g0);
 
     //RWParticles
-    double py = *std::max_element(my_dat.Y.begin(),my_dat.Y.end())+my_dat.R;
-    int starty = std::ceil(py);
-    // std::vector<int> startx{22,65,109,154,199};
-    // for(int i=0; i<startx.size(); ++i)
-    for(int i=0; i<nx-1; ++i)
-    for(int iy=1; iy<starty; ++iy)
+    if(!dom.IsRWContinue)
     {
-        // int x1 = startx[i];
-        int x1 = i;
-        int y1 = iy;
-        int x2 = x1+1;
-        int y2 = y1+1;
-        for(int ip=0; ip<RWP; ++ip)
+        double py = *std::max_element(my_dat.Y.begin(),my_dat.Y.end())+my_dat.R;
+        int starty = std::ceil(py);
+        // std::vector<int> startx{22,65,109,154,199};
+        // for(int i=0; i<startx.size(); ++i)
+        for(int i=0; i<nx-1; ++i)
+        for(int iy=1; iy<starty; ++iy)
         {
-            Vec3_t xt(random(x1,x2),random(y1,y2),0);
-            int xx = std::round(xt(0));
-            int yy = std::round(xt(1));
-            if(dom.Gamma[xx][yy][0]<1e-9)
-                dom.RWParticles.push_back(RW::Particle(xt,2,Dm));
-        } 
+            // int x1 = startx[i];
+            int x1 = i;
+            int y1 = iy;
+            int x2 = x1+1;
+            int y2 = y1+1;
+            for(int ip=0; ip<RWP; ++ip)
+            {
+                Vec3_t xt(random(x1,x2),random(y1,y2),0);
+                int xx = std::round(xt(0));
+                int yy = std::round(xt(1));
+                if(dom.Gamma[xx][yy][0]<1e-9)
+                    dom.RWParticles.push_back(RW::Particle(xt,2,Dm));
+            } 
+        }
+        std::cout<<"RW particles complete "<<std::endl;
+        std::cout<<"RW particles NUM "<<dom.RWParticles.size()<<std::endl;
+    }else{
+        for(size_t ip=0; ip<dom.RWParticles.size(); ++ip)
+        {
+            dom.RWParticles[ip].Dm = Dm;
+        }
+        std::cout<<"Assign Dm"<<std::endl;
+        
     }
-    std::cout<<"RW particles complete "<<std::endl;
-    std::cout<<"RW particles NUM "<<dom.RWParticles.size()<<std::endl;
-
     
 
 
@@ -296,7 +305,7 @@ int main (int argc, char **argv) try
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolvePRW( Tf, dtout, "test_pbed_r1", Setup, NULL);
+    dom.SolvePRW( Tf, dtout, "test_pbed_r2", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH

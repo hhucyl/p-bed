@@ -144,9 +144,9 @@ int main (int argc, char **argv) try
     int Nx = 10;
     int Ny = 6;
     size_t Rn = 10;
-    double Re = 1e4;
+    double Re = 1.0e4;
     size_t H = 50;
-    double nu = 1e-4;
+    double nu = 5e-4;
     double vmax = nu*Re/H*1.5;
     std::cout<<"vmax "<<vmax<<std::endl;
 
@@ -154,7 +154,7 @@ int main (int argc, char **argv) try
     double mag = 1;
     if(argc>=2) Nproc = atoi(argv[1]);
     
-    double R = (double) Rn+0.2;
+    double R = (double) Rn;
     int gapn = std::ceil(gap*Nx);
     int gapny = std::ceil(gap*Ny);
     std::cout<<"extra gap n "<<gapn<<std::endl;
@@ -256,15 +256,15 @@ int main (int argc, char **argv) try
     // dom.Initial(rho,v0,g0);
     // dom.InitialFromH5("test_pbed1_0017.h5",g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed4_0113.h5",g0);
+    // dom.InitialFromH5("test_pbed4_0113.h5",g0);
 
 
-    double Tf = 1e3;
-    double dtout = 1;
+    double Tf = 2e7;
+    double dtout = 2e4;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolveP( Tf, dtout, "test_pbed5", Setup, NULL);
+    dom.SolveP( Tf, dtout, "test_pbed1", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH

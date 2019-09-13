@@ -276,16 +276,21 @@ void Domain::WriteXDMF(char const * FileKey)
         }
 
         double *RWPpos = NULL;
+        double *RWPposb = NULL;
         int Nrwp = RWParticles.size();
         if(RWParticles.size()>0)
         {
             RWPpos = new double[3*Nrwp];
+            RWPposb = new double[3*Nrwp];
             for(size_t i=0; i<RWParticles.size(); ++i)
             {
                 RW::Particle *RWP = &RWParticles[i];
                 RWPpos[3*i] = RWP->X(0);
                 RWPpos[3*i+1] = RWP->X(1);
                 RWPpos[3*i+2] = RWP->X(2);
+                RWPposb[3*i] = RWP->Xb(0);
+                RWPposb[3*i+1] = RWP->Xb(1);
+                RWPposb[3*i+2] = RWP->Xb(2);
             }
         }
 
@@ -345,6 +350,15 @@ void Domain::WriteXDMF(char const * FileKey)
         N[0] = Nz;
         dsname.Printf("Nz");
         H5LTmake_dataset_int(file_id,dsname.CStr(),1,dims,N);
+        dims[0] = 1;
+        N[0] = Nrwp;
+        dsname.Printf("Nrwp");
+        H5LTmake_dataset_int(file_id,dsname.CStr(),1,dims,N);
+        double NNu[1];
+        NNu[0] = Nu;
+        dsname.Printf("Nu");
+        H5LTmake_dataset_double(file_id,dsname.CStr(),1,dims,NNu);
+        
         if(Particles.size()>0)
         {
             dims[0] = NP;
@@ -400,11 +414,14 @@ void Domain::WriteXDMF(char const * FileKey)
             // H5LTmake_dataset_int(file_id,dsname.CStr(),1,dims,PNodeList);
 
         }
+
         if(RWParticles.size())
         {
             dims[0] = 3*Nrwp;
             dsname.Printf("RWPposition");        
             H5LTmake_dataset_double(file_id,dsname.CStr(),1,dims,RWPpos);
+            dsname.Printf("RWPpositionb");        
+            H5LTmake_dataset_double(file_id,dsname.CStr(),1,dims,RWPposb);
         }
         
         delete [] Density ;
@@ -443,6 +460,7 @@ void Domain::WriteXDMF(char const * FileKey)
         if(RWParticles.size()>0)
         {
             delete [] RWPpos;
+            delete [] RWPposb;
         }
     }
 
