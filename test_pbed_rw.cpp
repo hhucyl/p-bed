@@ -148,7 +148,7 @@ int main (int argc, char **argv) try
     size_t Rn = 10;
     double Re = 1e4;
     size_t H = 50;
-    double nu = 1e-4;
+    double nu = 5e-4;
     double vmax = nu*Re/H*1.5;
     std::cout<<"vmax "<<vmax<<std::endl;
 
@@ -161,7 +161,7 @@ int main (int argc, char **argv) try
     int RWP = 20;
     if(argc>=2) Nproc = atoi(argv[0]);
     
-    double R = (double) Rn + 0.2;
+    double R = (double) Rn;
     int gapn = std::ceil(gap*Nx);
     int gapny = std::ceil(gap*Ny);
     std::cout<<"extra gap n "<<gapn<<std::endl;
@@ -261,7 +261,7 @@ int main (int argc, char **argv) try
     
     // dom.Initial(rho,v0,g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed_r1_0001.h5",g0);
+    dom.InitialFromH5("test_pbed1_0999.h5",g0);
 
     //RWParticles
     if(!dom.IsRWContinue)
@@ -270,6 +270,7 @@ int main (int argc, char **argv) try
         int starty = std::ceil(py);
         // std::vector<int> startx{22,65,109,154,199};
         // for(int i=0; i<startx.size(); ++i)
+        int nn = 0;
         for(int i=0; i<nx-1; ++i)
         for(int iy=1; iy<starty; ++iy)
         {
@@ -283,8 +284,12 @@ int main (int argc, char **argv) try
                 Vec3_t xt(random(x1,x2),random(y1,y2),0);
                 int xx = std::round(xt(0));
                 int yy = std::round(xt(1));
-                if(dom.Gamma[xx][yy][0]<1e-9)
+                if(dom.Gamma[xx][yy][0]<1e-12)
+                {
                     dom.RWParticles.push_back(RW::Particle(xt,2,Dm));
+                    dom.RWParticles.back().Tag = nn;
+                    nn++;
+                }
             } 
         }
         std::cout<<"RW particles complete "<<std::endl;
@@ -300,12 +305,12 @@ int main (int argc, char **argv) try
     
 
 
-    double Tf = 3;
-    double dtout = 1;
+    double Tf = 2e6;
+    double dtout = 2e3;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
-    dom.SolvePRW( Tf, dtout, "test_pbed_r2", Setup, NULL);
+    dom.SolvePRW( Tf, dtout, "test_pbed_r1", Setup, NULL);
     
     return 0;
 }MECHSYS_CATCH

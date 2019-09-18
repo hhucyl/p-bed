@@ -1,7 +1,8 @@
 clear
 clc
 prefix_name = {'/media/user/PZ_Q/p-bed/1/','/home/user/p-bed/analysis/'};
-num = [0:999];color = {'r','b'};
+prefix_name = {'/home/user/p-bed/analysis/'};
+num = [0:499];color = {'r','b'};
 ppy=109;
 for ii = 1:1
 for i=1:numel(num)

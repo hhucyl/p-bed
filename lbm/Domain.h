@@ -178,8 +178,10 @@ public:
     void AddDiskQ(Vec3_t &pos, double R);
     void AddSphereQ(Vec3_t &pos, double R);
     void AddDiskG(Vec3_t &pos, double R);
+    void ApplyDisksCheck();
     void AddDisksG();
     void adddiskG_sub(DEM::Disk *Pa, size_t ip);
+    void applydisksC_sub(DEM::Disk *Pa, size_t ip);
     void AddSphereG(Vec3_t &pos, double R);
     void AddDisksIBM();
     void adddiskIBM_sub(DEM::Disk *Pa);

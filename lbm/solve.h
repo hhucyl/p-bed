@@ -267,6 +267,9 @@ inline void Domain::SolvePRW(double Tf, double dtout, char const * TheFileKey, p
         if(std::fabs(Time)<1e-6 && (!IsContinue)){
             AddDisksG();
         }
+        if(std::fabs(Time)<1e-6){
+            ApplyDisksCheck();
+        }
 
         //collide and streaming
         // CollideSRTGamma();
@@ -415,7 +418,7 @@ inline void Domain::rwsolve_sub1(double dt)
                 int ip = Check[ix][iy][0];
                 if(Norm(Particles[ip].X-RWP->X)<=Particles[ip].Rh && Norm(Particles[ip].Xb-RWP->Xb)>Particles[ip].Rh)
                 {
-                    RWP->Reflect(Particles[ip].X,Particles[ip].Rh);
+                    RWP->Reflect(Particles[ip].X,Particles[ip].Rh,Time);
                     if(x1<0 || y1<0 || x2>(int) Ndim(0)-1 || y2>(int) Ndim(1)-1)
                     {   
                         if(y2>(int) Ndim(1)-1)
@@ -443,6 +446,7 @@ inline void Domain::rwsolve_sub1(double dt)
 inline void Domain::rwsolve_sub(double dt)
 {
     // std::cout<<1<<std::endl;
+    if(Time<1) std::cout<<"--- rwsub ---"<<std::endl;
     #ifdef USE_OMP
     #pragma omp parallel for schedule(static) num_threads(Nproc)
     #endif
@@ -462,23 +466,24 @@ inline void Domain::rwsolve_sub(double dt)
         int y1 = std::floor(RWP->X(1));
         int x2 = x1+1;
         int y2 = y1+1;
-        if(x1<0 || y1<0 || x2>(int) Ndim(0)-1 || y2>(int) Ndim(1)-1)
-        {
-            RWP->Leave(modexy,Box);
-            if(std::floor(RWP->X(1))+1>Ndim(1)-1)
-            {
-                RWP->X(1) = 2*(Ndim(1)-1) - RWP->X(1);
-            }
-            if(std::floor(RWP->X(1))<0)
-            {
-                RWP->X(1) = - RWP->X(1);
-            }
+        
+        // if(x1<0 || y1<0 || x2>(int) Ndim(0)-1 || y2>(int) Ndim(1)-1)
+        // {
+        //     RWP->Leave(modexy,Box);
+        //     if(std::floor(RWP->X(1))+1>Ndim(1)-1)
+        //     {
+        //         RWP->X(1) = 2*(Ndim(1)-1) - RWP->X(1);
+        //     }
+        //     if(std::floor(RWP->X(1))<0)
+        //     {
+        //         RWP->X(1) = - RWP->X(1);
+        //     }
 
-            x1 = std::floor(RWP->X(0));
-            y1 = std::floor(RWP->X(1));
-            x2 = x1+1;
-            y2 = y1+1;
-        }
+        //     x1 = std::floor(RWP->X(0));
+        //     y1 = std::floor(RWP->X(1));
+        //     x2 = x1+1;
+        //     y2 = y1+1;
+        // }
         std::vector<Vec3_t> VV{Vel[x1][y1][0],Vel[x2][y1][0],Vel[x1][y2][0],Vel[x2][y2][0]};
         std::vector<int> idx{x1,x2,y1,y2};
         RWP->Move(VV,idx,dt);
@@ -493,12 +498,19 @@ inline void Domain::rwsolve_sub(double dt)
         }
         int ix = std::round(RWP->X(0));
         int iy = std::round(RWP->X(1));
-        if(Gamma[ix][iy][0]>1e-9 && Check[ix][iy][0]>0) 
+        if(Gamma[ix][iy][0]>1e-9 && Check[ix][iy][0]>-1e-12) 
         {
             int ip = Check[ix][iy][0];
-            if(Norm(Particles[ip].X-RWP->X)<=Particles[ip].Rh && Norm(Particles[ip].X-RWP->Xb)>Particles[ip].Rh)
+            // if(Norm(Particles[ip].X-RWP->X)<=Particles[ip].Rh && Norm(Particles[ip].X-RWP->Xb)>Particles[ip].Rh)
+            if(Norm(Particles[ip].X-RWP->X) < Particles[ip].Rh)
             {
-                RWP->Reflect(Particles[ip].X,Particles[ip].Rh);
+                if(Norm(Particles[ip].X-RWP->Xb)>Particles[ip].Rh)
+                {
+                    RWP->Reflect(Particles[ip].X,Particles[ip].Rh,Time);
+                }else{
+                    RWP->X = RWP->Xb;
+                }
+                // std::cout<<2<<std::endl;
                 RWP->Leave(modexy,Box);
                 if(std::floor(RWP->X(1))+1>(int) Ndim(1)-1)
                 {
@@ -509,6 +521,11 @@ inline void Domain::rwsolve_sub(double dt)
                     RWP->X(1) = - RWP->X(1);
                 }
             }
+            if(Norm(Particles[ip].X-RWP->X) < Particles[ip].Rh)
+            {
+                RWP->X = RWP->Xb;
+            }
+
         }
         ix = std::round(RWP->X(0));
         iy = std::round(RWP->X(1));

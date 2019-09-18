@@ -285,6 +285,61 @@ inline void Domain::BoundaryGamma()
 }
 
 
+inline void Domain::applydisksC_sub(DEM::Disk *Pa,size_t ip)
+{
+    size_t nx = Ndim(0);
+    size_t ny = Ndim(1);
+    // size_t nz = Ndim(2);
+    int ixs = std::max(std::floor(Pa->X(0) - Pa->Rh - 2*dx),0.0);
+    int ixe = std::min(std::ceil(Pa->X(0) + Pa->Rh + 2*dx),(double) nx);
+    int iys = std::max(std::floor(Pa->X(1) - Pa->Rh - 2*dx),0.0);
+    int iye = std::min(std::ceil(Pa->X(1) + Pa->Rh + 2*dx),(double) ny);
+    // std::cout<<ixs<<" "<<ixe<<" "<<iys<<" "<<iye<<std::endl; 
+    for(int ix=ixs; ix<ixe; ++ix)
+    for(int iy=iys; iy<iye; ++iy) 
+    {
+        double x = (double) ix;
+        double y = (double) iy;
+        Vec3_t CC(x,y,0);
+        double len = DEM::DiskSquare(Pa->X,CC,Pa->Rh,dx);
+        // std::cout<<ix<<" "<<iy<<" "<<len<<std::endl;
+        if (std::fabs(len)<1.0e-12) continue;
+        Check[ix][iy][0] = ip;
+        
+        
+    }
+}
+
+inline void Domain::ApplyDisksCheck()
+{
+    // if(Time<0.5) std::cout<<"--- "<<"PSM"<<" ---"<<std::endl;    
+    // std::cout<<1<<std::endl;
+    #ifdef USE_OMP
+    #pragma omp parallel for schedule(static) num_threads(Nproc)
+    #endif
+    for(size_t ip=0; ip<Particles.size(); ++ip)
+    {
+        applydisksC_sub(&Particles[ip],ip);
+        // std::cout<<ip<<std::endl;
+        
+    }
+    // std::cout<<2<<std::endl;
+
+    #ifdef USE_OMP
+    #pragma omp parallel for schedule(static) num_threads(Nproc)
+    #endif
+    for(size_t ip=0; ip<GhostParticles.size(); ++ip)
+    {
+        DEM::Disk *Pa = &GhostParticles[ip];
+        if(!Pa->Ghost) continue;
+        // std::cout<<ip<<std::endl;
+        applydisksC_sub(&GhostParticles[ip],ip);
+        
+    }
+    // std::cout<<3<<std::endl;
+    
+}
+
 
 
 

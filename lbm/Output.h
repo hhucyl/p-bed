@@ -18,7 +18,7 @@ void Domain::WriteXDMF(char const * FileKey)
         double * Density   = new double[  Nx*Ny*Nz];
         double * Ga     = new double[  Nx*Ny*Nz];
         int * Ccon     = new int[  Nx*Ny*Nz];
-        double * Overlap = new double [Nx*Ny*Nz];
+        double * Ccheck = new double [Nx*Ny*Nz];
         double * Vvec      = new double[3*Nx*Ny*Nz];
         double * BFvec      = new double[3*Nx*Ny*Nz];
         double * Vvecp      = new double[3*Nx*Ny*Nz];
@@ -36,6 +36,7 @@ void Domain::WriteXDMF(char const * FileKey)
         {
             double rho    = 0.0;
             double gamma  = 0.0;
+            double check  = 0.0;
             int con       = 0.0;
             Vec3_t vel    = Vec3_t(0.0,0.0,0.0);
             Vec3_t velp    = Vec3_t(0.0,0.0,0.0);
@@ -49,6 +50,7 @@ void Domain::WriteXDMF(char const * FileKey)
                 rho    += Rho    [n+ni][l+li][m+mi];
                 temp    = IsSolid[n+ni][l+li][m+mi] ? 2.0: 0.0;
                 gamma  += std::max(Gamma[n+ni][l+li][m+mi],temp);
+                check  += Check [n+ni][l+li][m+mi];
                 con    += Con    [n+ni][l+li][m+mi];
                 vel    += Vel    [n+ni][l+li][m+mi];
                 BF    += BForce    [n+ni][l+li][m+mi];
@@ -57,12 +59,14 @@ void Domain::WriteXDMF(char const * FileKey)
             }
             rho  /= Step*Step*Step;
             gamma/= Step*Step*Step;
+            check/= Step*Step*Step;
             con/= Step*Step*Step;
             vel  /= Step*Step*Step;
             velp  /= Step*Step*Step;
             flbm  /= Step*Step*Step;
             BF   /= Step*Step*Step;
             Ga   [i]  = (double) gamma;
+            Ccheck   [i]  = (double) check;
             Ccon   [i]  = (int) con;
             Density [i]  = (double) rho;            
             Vvec[3*i  ]  = (double) vel(0)*(1.0-Ga[i]);
@@ -305,6 +309,8 @@ void Domain::WriteXDMF(char const * FileKey)
         {
             dsname.Printf("Gamma");
             H5LTmake_dataset_double(file_id,dsname.CStr(),1,dims,Ga   );
+            dsname.Printf("Check");
+            H5LTmake_dataset_double(file_id,dsname.CStr(),1,dims,Ccheck   );
             dsname.Printf("Con");
             H5LTmake_dataset_int(file_id,dsname.CStr(),1,dims,Ccon   );
         }
@@ -434,7 +440,7 @@ void Domain::WriteXDMF(char const * FileKey)
         if(IsF) delete [] Ff; 
         if(IsFt) delete [] Fft; 
         if(Isq) delete [] qq; 
-        delete [] Overlap;
+        delete [] Ccheck;
         if(Particles.size()>0)
         {
             delete [] Ptag;
@@ -523,6 +529,11 @@ void Domain::WriteXDMF(char const * FileKey)
         oss << "     <Attribute Name=\"Con\" AttributeType=\"Scalar\" Center=\"Node\">\n";
         oss << "       <DataItem Dimensions=\"" << Nx << " " << Ny << " " << Nz << "\" NumberType=\"Float\" Precision=\"4\" Format=\"HDF\">\n";
         oss << "        " << fn.CStr() <<":/Con\n";
+        oss << "       </DataItem>\n";
+        oss << "     </Attribute>\n";
+        oss << "     <Attribute Name=\"Check\" AttributeType=\"Scalar\" Center=\"Node\">\n";
+        oss << "       <DataItem Dimensions=\"" << Nx << " " << Ny << " " << Nz << "\" NumberType=\"Float\" Precision=\"4\" Format=\"HDF\">\n";
+        oss << "        " << fn.CStr() <<":/Check\n";
         oss << "       </DataItem>\n";
         oss << "     </Attribute>\n";
         oss << "   </Grid>\n";

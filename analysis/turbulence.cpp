@@ -4,7 +4,7 @@
 
 int main()
 {
-    char const * TheFileKey = "/home/user/p-bed/test_pbed_r2";
+    char const * TheFileKey = "/media/user/PZ_Q/p-bed/1e4/test_pbed1";
     char const * FileKey = "turbulence";
     String fn;
     size_t fileNum = 1000;
@@ -54,7 +54,7 @@ int main()
             Vvel[3*nn] = vel(0); 
             Vvel[3*nn+1] = vel(1); 
             Vvel[3*nn+2] = vel(2); 
-            if(Gamma>1.0)
+            if(Gamma>1e-6)
             {
                 vel = OrthoSys::O;
                 rho = 1.0;

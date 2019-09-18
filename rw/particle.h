@@ -16,18 +16,21 @@ class Particle
 
     Vec3_t X;
     Vec3_t Xb;
+    Vec3_t Xb1;
     int D;
     double Dm;
     std::vector<double> TimeArray;
     std::vector<double> OutTimeArray;
     void Move(std::vector<Vec3_t> &VV, std::vector<int> &idx, double dt);
     void Leave(int modexy, Vec3_t &Box);
-    void Reflect(Vec3_t &C, double R);
+    void Reflect(Vec3_t &C, double R, double Time);
 };
 inline Particle::Particle(Vec3_t &X0, int d, double dm)
 {
     X = X0;
     Xb = X;
+    Xb1 = X;
+
     D = d;
     Dm = dm;
     Time = 0;
@@ -58,6 +61,7 @@ inline void Particle::Move(std::vector<Vec3_t> &VV, std::vector<int> &idx, doubl
     // std::cout<<VV[0]<<" "<<VV[1]<<" "<<VV[2]<<" "<<VV[3]<<std::endl;
     // std::cout<<x1<<" "<<x2<<" "<<y1<<" "<<y2<<std::endl;
     // std::cout<<V(0)<<"    "<<V(1)<<std::endl;
+    Xb1 = Xb;
     Xb = X;
     X = X+V*dt + std::sqrt(2*D*Dm*dt)*e;    
 }
@@ -69,8 +73,11 @@ inline void Particle::Leave(int modexy, Vec3_t &Box)
         double dist = std::fabs(X(modexy)-Box(0));
         X(modexy) = Box(1)-dist;
         double distb = Xb(modexy)-Box(0);
-        Xb(modexy) = Box(1)+distb;;   
-
+        Xb(modexy) = Box(1)+distb;
+        // double dist = X(modexy)-Box(0);
+        // X(modexy) = Box(1)+dist+1.0;        
+        // double distb = Xb(modexy)-Box(0);
+        // Xb(modexy) = Box(1)+distb+1.0;
     }
     if(X(modexy)>Box(1))
     {
@@ -78,6 +85,10 @@ inline void Particle::Leave(int modexy, Vec3_t &Box)
         X(modexy) = Box(0)+dist;
         double distb = Xb(modexy)-Box(1);
         Xb(modexy) = Box(0)+distb;
+        // double dist = X(modexy) - Box(1);
+        // double distb = Xb(modexy)-Box(1);
+        // X(modexy) = Box(0) + dist - 1.0;
+        // Xb(modexy) = Box(0) + distb - 1.0;
 
     }
     
@@ -85,7 +96,7 @@ inline void Particle::Leave(int modexy, Vec3_t &Box)
 
 }
 
-inline void Particle::Reflect(Vec3_t &C, double R)
+inline void Particle::Reflect(Vec3_t &C, double R, double Time)
 {
     double L1 = Norm(X-Xb);
     double L2 = Norm(Xb-C);
@@ -103,6 +114,7 @@ inline void Particle::Reflect(Vec3_t &C, double R)
         double q2 = (-BB-std::sqrt(Delta))/(2.0*AA);
         bool flag1 = q1>=0 && q1-1<1e-9;
         bool flag2 = q2>=0 && q2-1<1e-9;
+        bool flag = true;
         if(flag1)
         {
             q = q1;
@@ -111,23 +123,35 @@ inline void Particle::Reflect(Vec3_t &C, double R)
             {
                 q = q2;
             }else{
-                std::cout<<q2<<" "<<X<<" "<<Xb<<" "<<"ERROR IN RWPARTICLE REFLECT!!!"<<std::endl;
+                flag = false;
+                std::cout<<q1<<" "<<q2<<" RW Now "<<X<<" RW Pre "<<Xb<<" Circle Center "<<C<<" ERROR IN RWPARTICLE REFLECT!!!"<<std::endl;
+                std::cout<<Tag<<" Time "<<Time<<" L "<<Norm(X-C)<<" Lb "<<Norm(Xb-C)<<" Lb1 "<<Norm(Xb1-C)<<" Circle R "<<R<<" ERROR IN RWPARTICLE REFLECT!!!"<<std::endl;
             }
         }
         // std::cout<<"q = "<<q<<std::endl;
-        Vec3_t Xi(Xb(0)-q*(Xb(0)-X(0)),Xb(1)-q*(Xb(1)-X(1)),0.0);
-        // std::cout<<"D = "<<Xi<<std::endl;
-        double y = -((X(0)-2.*Xi(0))*(C(0)-Xi(0))*(C(1)-Xi(1)) + (X(1)-2.*Xi(1))*(C(1)-Xi(1))*(C(1)-Xi(1)) + X(0)*(C(0)-Xi(0))*(C(1)-Xi(1)) - X(1)*(C(0)-Xi(0))*(C(0)-Xi(0)))/(R*R);
-        double x;
-        if(std::fabs(C(1)-Xi(1))>0)
+        if(flag)
         {
-            x = ((C(0)-Xi(0))*(y-X(1)))/(C(1)-Xi(1)) + X(0);
-        }else{
-            x = -((C(1)-Xi(1))*y + (X(0)-2.*Xi(0))*(C(0)-Xi(0)) + (X(1)-2.*Xi(1))*(C(1)-Xi(1)))/(C(0)-Xi(0));
+            Vec3_t Xi(Xb(0)-q*(Xb(0)-X(0)),Xb(1)-q*(Xb(1)-X(1)),0.0);
+            // std::cout<<"D = "<<Xi<<std::endl;
+            double y = -((X(0)-2.*Xi(0))*(C(0)-Xi(0))*(C(1)-Xi(1)) + (X(1)-2.*Xi(1))*(C(1)-Xi(1))*(C(1)-Xi(1)) + X(0)*(C(0)-Xi(0))*(C(1)-Xi(1)) - X(1)*(C(0)-Xi(0))*(C(0)-Xi(0)))/(R*R);
+            double x;
+            if(std::fabs(C(1)-Xi(1))>0)
+            {
+                x = ((C(0)-Xi(0))*(y-X(1)))/(C(1)-Xi(1)) + X(0);
+            }else{
+                x = -((C(1)-Xi(1))*y + (X(0)-2.*Xi(0))*(C(0)-Xi(0)) + (X(1)-2.*Xi(1))*(C(1)-Xi(1)))/(C(0)-Xi(0));
+            }
+            X = x,y,0.0;
         }
-        // std::cout<<x<<" "<<y<<std::endl;
-        X = x,y,0.0;
+        
+        
+        
+    }else{
+        std::cout<<Delta<<std::endl;
+        std::cout<<" RW Now "<<X<<" RW Pre "<<Xb<<" Circle Center "<<C<<" ERROR IN RWPARTICLE REFLECT!!!"<<std::endl;
+        std::cout<<Tag<<" Time "<<Time<<" L "<<Norm(X-C)<<" Lb "<<Norm(Xb-C)<<" Lb1 "<<Norm(Xb1-C)<<" Circle R "<<R<<" ERROR IN RWPARTICLE REFLECT!!!"<<std::endl;
     }
+    
     
 }
 
