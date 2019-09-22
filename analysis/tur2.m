@@ -2,8 +2,9 @@ clear
 clc
 prefix_name = {'/media/user/PZ_Q/p-bed/1/','/home/user/p-bed/analysis/'};
 prefix_name = {'/home/user/p-bed/analysis/'};
-num = [0:499];color = {'r','b'};
+num = [0:999];color = {'r','b'};
 ppy=109;
+ppy = 130;
 for ii = 1:1
 for i=1:numel(num)
     
@@ -48,9 +49,9 @@ hold on
 plot(uvhasy,char(color{ii}))
 uu = sqrt(-min(uvhasy))
 gga = mean(ga,1);
-py = 108;
+py = 130;
 
-fi = (py*double(nx)-50*pi*8^2)/(py*double(nx));
+fi = (py*double(nx)-60*pi*8^2)/(py*double(nx));
 k = 5.6e-3*fi^3/(1-fi)^2*16*16;
 Rek = uu*sqrt(k)/0.0005
 figure(4)

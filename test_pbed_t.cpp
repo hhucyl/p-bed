@@ -132,7 +132,7 @@ void Initial(LBM::Domain &dom, void *UD)
             double yy = (double) iy;
             double Y = yy-py;
             // double uy = dat.g/(2.0*dat.nu)*(H*(yy-py) - (yy-py)*(yy-py)); 
-            double uy = dat.g/(2.0*dat.nu)*(-0.25*((Y-H)*(Y-H)-H*H)); 
+            double uy = dat.g/(2.0*dat.nu)*(-1.0*((Y-H)*(Y-H)-H*H)); 
             Vec3_t vtemp(uy, 0, 0);
             // Vec3_t vtemp((double) dat.vb, 0, 0);
             dom.Rho[ix][iy][0] = 1.0;
@@ -165,13 +165,13 @@ int main (int argc, char **argv) try
     std::srand((unsigned)time(NULL));    
     size_t Nproc = 12;
     int Nx = 10;
-    int Ny = 5;
+    int Ny = 6;
     size_t Rn = 10;
     double Re = 1e4;
     size_t H = 50;
-    double vmax = 0.15;
-    double nu = 2.0/3.0*vmax*H/Re;
-    std::cout<<"nu "<<nu<<std::endl;
+    double nu = 5e-4;
+    double vmax = nu*Re/H*1.5;
+    std::cout<<"vmax "<<nu<<std::endl;
 
     double gap = 2;
     double mag = 1;
@@ -204,7 +204,7 @@ int main (int argc, char **argv) try
     myUserData my_dat;
     dom.UserData = &my_dat;
     my_dat.nu = nu;
-    my_dat.g = 8.0*nu*vmax/((double)H*(double)H);
+    my_dat.g = 2.0*nu*vmax/((double)H*(double)H);
     my_dat.R = R;
     my_dat.gap = gap;
     my_dat.Ny = Ny;
@@ -282,7 +282,7 @@ int main (int argc, char **argv) try
     
     // dom.Initial(rho,v0,g0);
     Initial(dom, dom.UserData);
-    dom.InitialFromH5("test_pbed2_0999.h5",g0);
+    dom.InitialFromH5("test_pbed1_0999.h5",g0);
 
     //RWParticles
     double py = *std::max_element(my_dat.Y.begin(),my_dat.Y.end())+my_dat.R;
@@ -317,7 +317,7 @@ int main (int argc, char **argv) try
     
 
 
-    double Tf = 1e6;
+    double Tf = 3e6;
     double dtout = 1e3;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;

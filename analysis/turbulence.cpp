@@ -4,19 +4,19 @@
 
 int main()
 {
-    char const * TheFileKey = "/media/user/PZ_Q/p-bed/1e4/test_pbed1";
+    char const * TheFileKey = "/home/user/p-bed/test_pbed_r1";
     char const * FileKey = "turbulence";
     String fn;
-    size_t fileNum = 1000;
+    int fileNum = 1000;
     size_t Nneigh = 9;
-    double nu = 1e-3;
+    double nu = 5e-4;
     LBM::Domain dom(D2Q9,MRT, nu, iVec3_t(1,1,1),1.0,1.0);
     std::vector<double *> VV;
     std::vector<double *> Vvt;
     std::vector<double *> GGa;
     int nx,ny,nz;
 
-    for(size_t i=0;i<fileNum; ++i)
+    for(int i=0;i<fileNum; ++i)
     {
         fn.Printf("%s_%04d", TheFileKey, i);
         fn.append(".h5");
@@ -35,6 +35,7 @@ int main()
         double *Vvel = new double[3*nx*ny*nz];
         H5LTread_dataset_double(file_id,"/F_0",Ff);
         H5LTread_dataset_double(file_id,"/Gamma",Ga);
+        H5LTread_dataset_double(file_id,"/Velocity_0",Vvel);
         size_t nn=0;
         for(size_t ix=0; ix<nx; ++ix)
         for(size_t iy=0; iy<ny; ++iy)
@@ -50,15 +51,15 @@ int main()
                 rho += f;
                 vel += f*dom.C[k];
 		    }
-            vel *= dom.Cs/rho;
-            Vvel[3*nn] = vel(0); 
-            Vvel[3*nn+1] = vel(1); 
-            Vvel[3*nn+2] = vel(2); 
-            if(Gamma>1e-6)
-            {
-                vel = OrthoSys::O;
-                rho = 1.0;
-            }
+            // vel *= dom.Cs/rho;
+            // Vvel[3*nn] = vel(0); 
+            // Vvel[3*nn+1] = vel(1); 
+            // Vvel[3*nn+2] = vel(2); 
+            // if(Gamma>1e-6)
+            // {
+            //     vel = 0.0,0.0,0.0;
+            //     rho = 1.0;
+            // }
             double tau = dom.Tau;
             double VdotV = dot(vel,vel);
             double NonEq[Nneigh];
@@ -97,10 +98,14 @@ int main()
     
     double *Va = new double[3*nx*ny*nz];
     memset(Va,0,3*nx*ny*nz);
-    for(size_t i=0;i<fileNum; ++i)
+    for(int i=0;i<fileNum; ++i)
     {
         for(size_t ii=0; ii<3*nx*ny*nz; ++ii)
         {
+            if(i==0)
+            {
+                Va[ii] = 0.0;    
+            }
             Va[ii] += VV[i][ii];
         }
 
@@ -110,7 +115,7 @@ int main()
         Va[ii] /= fileNum;
     }
     // std::cout<<1<<std::endl;
-    for(size_t i=0;i<fileNum; ++i)
+    for(int i=0;i<fileNum; ++i)
     {
 
         double *Vhas = new double[3*nx*ny*nz];
@@ -154,6 +159,8 @@ int main()
         H5LTmake_dataset_double(file_id1,dsname.CStr(),1,dims,Vhas);
         dsname.Printf("Vave");
         H5LTmake_dataset_double(file_id1,dsname.CStr(),1,dims,Va);
+        dsname.Printf("V");
+        H5LTmake_dataset_double(file_id1,dsname.CStr(),1,dims,VV[i]);
        
         delete[] Vhas;
         delete[] VV[i];
@@ -196,6 +203,11 @@ int main()
         oss << "     <Attribute Name=\"Vave"<< "\" AttributeType=\"Vector\" Center=\"Node\">\n";
         oss << "       <DataItem Dimensions=\"" << nx << " " << ny << " " << nz << " 3\" NumberType=\"Float\" Precision=\"4\" Format=\"HDF\">\n";
         oss << "        " << fn1.CStr() <<":/Vave" << "\n";
+        oss << "       </DataItem>\n";
+        oss << "     </Attribute>\n";
+        oss << "     <Attribute Name=\"V"<< "\" AttributeType=\"Vector\" Center=\"Node\">\n";
+        oss << "       <DataItem Dimensions=\"" << nx << " " << ny << " " << nz << " 3\" NumberType=\"Float\" Precision=\"4\" Format=\"HDF\">\n";
+        oss << "        " << fn1.CStr() <<":/V" << "\n";
         oss << "       </DataItem>\n";
         oss << "     </Attribute>\n";
         oss << "   </Grid>\n";

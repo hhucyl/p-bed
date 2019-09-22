@@ -1,22 +1,24 @@
 clear
 clc
 prefix = {'/home/user/p-bed/'};
-num = [0:999];
-name = strcat(prefix,'test_pbed_r2_',num2str(0,'%04d'),'.h5');
+num = [0:689];
+name = strcat(prefix,'test_pbed_r1_',num2str(0,'%04d'),'.h5');
 nx = double(h5read(char(name),'/Nx'));
 ny = double(h5read(char(name),'/Ny'));
 p = h5read(char(name),char('/RWPposition'));
 py = p(2:3:end-1);
 k1 = [43,65,86,108];
+k1 = [66,88,110,131];
 color = {'r','k','c','b'};
 ppy = 109;
+ppy = 131;
 for i = 1:numel(k1)
     kkk{i,1} = find(py<=k1(i));
     
     M0(1,i) = numel(kkk{i});
 end
 for i=1:numel(num)
-    name = strcat(prefix,'test_pbed_r2_',num2str(num(i),'%04d'),'.h5');
+    name = strcat(prefix,'test_pbed_r1_',num2str(num(i),'%04d'),'.h5');
     p = h5read(char(name),char('/RWPposition'));
     px = p(1:3:end-2);
     py = p(2:3:end-1);

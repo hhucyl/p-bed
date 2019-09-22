@@ -1,6 +1,6 @@
 clear
 clc
-num = [272:294];
+num = [594:673];
 R = 8;
 for i = 1:numel(num)
     name = strcat('test_pbed_r1_',num2str(num(i),'%04d'),'.h5');
