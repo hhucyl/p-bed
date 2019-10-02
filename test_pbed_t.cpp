@@ -112,7 +112,7 @@ void Initial(LBM::Domain &dom, void *UD)
     double py = *std::max_element(dat.Y.begin(),dat.Y.end())+dat.R;
     double H = ((double) ny-1) - py;
     std::cout<<"py = "<<py<<" H = "<<H<<std::endl;
-    std::cout<<"max vel "<<dat.g/(2.0*dat.nu)*H*H/4.0<<std::endl;
+    std::cout<<"max vel "<<dat.g/(2.0*dat.nu)*H*H<<std::endl;
     for(size_t ix=0; ix<nx; ++ix)
     for(size_t iy=0; iy<ny; ++iy)
     {

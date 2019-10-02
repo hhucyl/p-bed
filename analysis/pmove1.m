@@ -3,14 +3,14 @@ clc
 index = [];
 ik = [];
 for i=1:N
-    kk1 = find(tt{i}(1:end)>1e3);
-    kk2 = find(tt{i}(1:end)<=2e4);
+    kk1 = find(tt{i}(1:end)>2.2655e4);
+    kk2 = find(tt{i}(1:end)<=1e7);
     kk = intersect(kk1,kk2);
     if(numel(kk)>0)%(numel(kk)==0)
         index = [index;i];
         ii = numel(index);
-        ik{ii,1}= tk{i}(kk);
-        ik{ii,2}= tk{i}(kk)+tt{i}(kk)./1e3-1;
+        ik{ii,1}= tk{i}(kk);%get in time
+        ik{ii,2}= tk{i}(kk)+tt{i}(kk)./1e3-1;%get out time
     end
     i
     
@@ -34,10 +34,11 @@ for i=1:numel(index)
         %DPDX = [DPDX;diff(pdx{i,j}')];
 %         plot(pdx{i,j},pdy{i,j},'b*')
 %         hold on
-%         axis([0 220 0 150])
+%         axis([0 220 0 170])
+%         
 %         drawnow
     end
-    
+%     title(i)
 %     clf
     
     i

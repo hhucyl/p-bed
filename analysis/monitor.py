@@ -3,9 +3,9 @@ import h5py as h5
 import matplotlib.pyplot as plt
 import sys
 
-prefix = "/home/user/p-bed/"
+prefix = "/media/user/PZ_Q/p-bed/1e4/"
 prefix = prefix + ""
-prefix = prefix + "test_pbed_r1_"
+prefix = prefix + "test_pbed1_"
 num = np.arange(0,999+1)
 Py = 5
 Px = 10

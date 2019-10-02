@@ -1,14 +1,18 @@
 clear
 clc
 prefix_name = {'/home/user/p-bed/'};
-prefix_name = {'/media/user/PZ_Q/p-bed/1/'}
+prefix_name = {'/media/user/PZ_Q/p-bed/1/'};
+prefix_name = {'/media/user/PZ_Q/p-bed/1e4/'};
 fname = {'test_pbed_t1_','test_pbed_t2_'};
+
 color = {'r','b'};
-dt = [1e3,0.5e3];
-for ii = 1:1
+dt = [1e3,1e3];
+for ii = 2:2
+pp = h5read(char(strcat(prefix_name,fname{ii},num2str(0,'%04d'),'.h5')),'/RWPposition');
+NN = numel(pp)/3;
 N = 87600;
-ppy = 109;
-num = [0:999];
+ppy = 130;
+num = [0:2999];
 t = zeros(N,numel(num));
 Px = zeros(N,numel(num));
 Py = zeros(N,numel(num));

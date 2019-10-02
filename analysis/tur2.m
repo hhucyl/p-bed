@@ -1,10 +1,10 @@
 clear
 clc
 prefix_name = {'/media/user/PZ_Q/p-bed/1/','/home/user/p-bed/analysis/'};
-prefix_name = {'/home/user/p-bed/analysis/'};
+prefix_name = {'/media/user/PZ_Q/p-bed/1e4/'};
 num = [0:999];color = {'r','b'};
 ppy=109;
-ppy = 130;
+ppy = 131;
 for ii = 1:1
 for i=1:numel(num)
     
@@ -22,8 +22,8 @@ for i=1:numel(num)
     uv(:,:,i) = vx.*vy.*(1-ga);
     uhas(:,:,i) = uhas(:,:,i).*(1-ga);
     vhas(:,:,i) = vhas(:,:,i).*(1-ga);
-    ubed(i,1) = sum(sum(uhas(:,1:ppy-1,i).^2));
-    vbed(i,1) = sum(sum(vhas(:,1:ppy-1,i).^2));
+    ubed(i,1) = sum(sum(uhas(:,2:ppy-1,i).^2));
+    vbed(i,1) = sum(sum(vhas(:,2:ppy-1,i).^2));
     
 end
 vel = h5read(char(name),char('/Vave'));
@@ -49,7 +49,7 @@ hold on
 plot(uvhasy,char(color{ii}))
 uu = sqrt(-min(uvhasy))
 gga = mean(ga,1);
-py = 130;
+py = 131;
 
 fi = (py*double(nx)-60*pi*8^2)/(py*double(nx));
 k = 5.6e-3*fi^3/(1-fi)^2*16*16;
