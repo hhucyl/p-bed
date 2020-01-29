@@ -7,6 +7,7 @@
 *.svg
 *.npy
 /CMakeFiles
+/post
 CMakeCache.txt
 cmake_install.cmake
 Makefile
