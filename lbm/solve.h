@@ -118,6 +118,11 @@ inline void Domain::SolveP(double Tf, double dtout, char const * TheFileKey, ptD
          
         //set fluid force
         if(std::fabs(Time)<1e-6 && (!IsContinue)){
+            GhostParticles.clear();
+            GhostParticles.assign(Particles.begin(), Particles.end()); 
+        
+            GhostPeriodic();
+        
             AddDisksG();
         }
 

@@ -140,40 +140,33 @@ double random(double a, double b)
 int main (int argc, char **argv) try
 {
     std::srand((unsigned)time(NULL)); 
-    int Nx = 10;
-    int Ny = 6;   
+      
     size_t Nproc = 5;
-    size_t Rn = 10;
     double Re = 5e3;
     size_t H = 50;
     double nu = 1e-4;
     double vmax = nu*Re/H*1.5;
+    size_t nx = 220;
+    size_t ny = 182;
     std::cout<<"vmax "<<vmax<<std::endl;
-
-    double gap = 2;
-    double mag = 1;
     if(argc>=2) Nproc = atoi(argv[1]);
     
-    double R = (double) Rn+0.2;
-    int gapn = std::ceil(gap*Nx);
-    int gapny = std::ceil(gap*Ny);
-    std::cout<<"extra gap n "<<gapn<<std::endl;
-    size_t nx = std::ceil(2*R*Nx)+gapn;
-    size_t ny = std::ceil(2*R*Ny)+gapny+H;
-    size_t nz = 1;
+   	
+    size_t nz = 1; 
     double dx = 1.0;
     double dt = 1.0;
     double rho = 1.0;
     double rhos = 2.0;
+    double R = 10.0;
+    double d = 2.0;
     std::cout<<"R = "<<R<<std::endl;
-    //nu = 1.0/30.0;
     std::cout<<nx<<" "<<ny<<" "<<nz<<std::endl;
     LBM::Domain dom(D2Q9,MRT, nu, iVec3_t(nx,ny,nz),dx,dt);
     myUserData my_dat;
     dom.UserData = &my_dat;
     my_dat.nu = nu;
     my_dat.g = 2.0*nu*vmax/((double)H*(double)H);
-    my_dat.R = R;
+    my_dat.R = R-d;
     Vec3_t g0(my_dat.g,0.0,0.0);
     my_dat.g0 = g0;
     my_dat.V = 0;
@@ -189,11 +182,12 @@ int main (int argc, char **argv) try
     Vec3_t v(0.0,0.0,0.0);
     Vec3_t w(0.0,0.0,0.0);
     //DEM
-    dom.dtdem = 0.01*dt;
+    dom.dtdem = dt;
     //fixed
-    char const *infilename = "circle_p.txt";
+    char const *infilename = "circle_mono.txt";
     String fn;
     fn.Printf("%s",infilename);
+    std::cout<<"Reading from "<<fn<<std::endl;
     std::fstream ifile(fn.CStr(),std::ios::in);
     int N = 0;
     double fi = 0;
@@ -201,7 +195,7 @@ int main (int argc, char **argv) try
         ifile>>fi;
         ifile>>N;
         std::cout<<"porosity "<<fi<<"Number of Circle "<<N<<std::endl;
-        for(size_t i=0; i<N; ++i)
+        for(int i=0; i<N; ++i)
         {
             double x;
             double y;
@@ -228,7 +222,7 @@ int main (int argc, char **argv) try
         dom.Particles[ip].Mu = 0.4;
         dom.Particles[ip].Eta = 0.0;
         dom.Particles[ip].Beta = 0.0;
-        dom.Particles[ip].Rh = 0.8*R;
+        dom.Particles[ip].Rh = dom.Particles[ip].R - d;
         dom.Particles[ip].FixVeloc();
 
     }

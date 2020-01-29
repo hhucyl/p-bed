@@ -140,7 +140,7 @@ double random(double a, double b)
 int main (int argc, char **argv) try
 {
     std::srand((unsigned)time(NULL));    
-    size_t Nproc = 10;
+    size_t Nproc = 4;
     int Nx = 10;
     int Ny = 6;
     size_t Rn = 10;
@@ -259,8 +259,8 @@ int main (int argc, char **argv) try
     // dom.InitialFromH5("test_pbed4_0113.h5",g0);
 
 
-    double Tf = 5e7;
-    double dtout = 5e4;
+    double Tf = 2;
+    double dtout = 1;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
     //solving
