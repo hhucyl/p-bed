@@ -88,8 +88,9 @@ void Initial(LBM::Domain &dom, void *UD)
     // double py = dat.Ny*2*dat.R + (dat.Ny-1)*dat.gap;
     double py = *std::max_element(dat.Y.begin(),dat.Y.end())+dat.R;
     double H = ((double) ny-1) - py;
+    std::cout<<"Initialing"<<std::endl;
     std::cout<<"py = "<<py<<" H = "<<H<<std::endl;
-    std::cout<<"max vel "<<dat.g/(2.0*dat.nu)*H*H/4.0<<std::endl;
+    std::cout<<"max vel "<<dat.g/(2.0*dat.nu)*H*H<<std::endl;
     for(size_t ix=0; ix<nx; ++ix)
     for(size_t iy=0; iy<ny; ++iy)
     {
@@ -142,12 +143,13 @@ int main (int argc, char **argv) try
     std::srand((unsigned)time(NULL)); 
       
     size_t Nproc = 5;
-    double Re = 5e3;
+    double Re = 1e4;
     size_t H = 50;
-    double nu = 1e-4;
+    double nu = 5e-4;
     double vmax = nu*Re/H*1.5;
     size_t nx = 220;
     size_t ny = 182;
+    std::cout<<"Re "<<Re<<" nu "<<nu<<std::endl;
     std::cout<<"vmax "<<vmax<<std::endl;
     if(argc>=2) Nproc = atoi(argv[1]);
     
@@ -194,7 +196,7 @@ int main (int argc, char **argv) try
     if(!ifile.fail()){
         ifile>>fi;
         ifile>>N;
-        std::cout<<"porosity "<<fi<<"Number of Circle "<<N<<std::endl;
+        std::cout<<"porosity "<<fi<<" Number of Circle "<<N<<std::endl;
         for(int i=0; i<N; ++i)
         {
             double x;
