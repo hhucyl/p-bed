@@ -213,6 +213,9 @@ public:
     void SolveRW(double Tf, double dtout, char const * TheFileKey, ptDFun_t ptSetup, ptDFun_t ptReport);
     void rwsolve_sub(double dt);
     void rwsolve_sub1(double dt);
+    void rwsolve_sub2(double dt);
+    void Pa2Grid(RW::Particle *RWP,std::vector<int> &idc);
+    void Pa2GridV(RW::Particle *RWP, std::vector<int> &idx, std::vector<Vec3_t> &VV);
     void CheckInside();
     #ifdef USE_OMP
     omp_lock_t      lck;                      ///< to protect variables in multithreading
@@ -292,6 +295,10 @@ public:
     double dtdem;
     Vec3_t Box;
     int modexy;
+
+    Vec3_t Box1;
+    int modexy1;
+    
     bool IsContinue;
     bool IsRWContinue;
     
@@ -552,6 +559,7 @@ inline Domain::Domain(LBMethod TheMethod, CollideMethod TheMethodC,  double Then
 #include "Initialize.h"
 #include "ApplySolidBoundary.h"
 #include "CoupleDEM.h"
+#include "solve_rw.h"
 #include "solve.h"
 
 

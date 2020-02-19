@@ -6,6 +6,8 @@
 *.avi
 *.svg
 *.npy
+*.mat
+*.png
 /CMakeFiles
 /post
 CMakeCache.txt

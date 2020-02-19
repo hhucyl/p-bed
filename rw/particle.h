@@ -23,6 +23,8 @@ class Particle
     std::vector<double> OutTimeArray;
     void Move(std::vector<Vec3_t> &VV, std::vector<int> &idx, double dt);
     void Leave(int modexy, Vec3_t &Box);
+    void Leave1(int modexy, Vec3_t &Box);
+    void LeaveReflect(int modexy1, Vec3_t &Box1);
     void Reflect(Vec3_t &C, double R, double Time);
 };
 inline Particle::Particle(Vec3_t &X0, int d, double dm)
@@ -74,10 +76,12 @@ inline void Particle::Leave(int modexy, Vec3_t &Box)
         X(modexy) = Box(1)-dist;
         double distb = Xb(modexy)-Box(0);
         Xb(modexy) = Box(1)+distb;
-        // double dist = X(modexy)-Box(0);
-        // X(modexy) = Box(1)+dist+1.0;        
+
+        // double dist = std::fabs(X(modexy)-Box(0));
+        // X(modexy) = Box(1)-dist+1.0;
         // double distb = Xb(modexy)-Box(0);
-        // Xb(modexy) = Box(1)+distb+1.0;
+        // Xb(modexy) = Box(1)+distb+1.0;   
+
     }
     if(X(modexy)>Box(1))
     {
@@ -85,15 +89,61 @@ inline void Particle::Leave(int modexy, Vec3_t &Box)
         X(modexy) = Box(0)+dist;
         double distb = Xb(modexy)-Box(1);
         Xb(modexy) = Box(0)+distb;
-        // double dist = X(modexy) - Box(1);
+
+        // double dist = std::fabs(X(modexy)-Box(1));
+        // X(modexy) = Box(0)+dist-1.0;
         // double distb = Xb(modexy)-Box(1);
-        // X(modexy) = Box(0) + dist - 1.0;
-        // Xb(modexy) = Box(0) + distb - 1.0;
+        // Xb(modexy) = Box(0)+distb-1.0;
 
     }
     
 
 
+}
+
+inline void Particle::Leave1(int modexy, Vec3_t &Box)
+{
+    if(1000*X(modexy)<1000*Box(0))
+    {   
+        // double dist = std::fabs(X(modexy)-Box(0));
+        // X(modexy) = Box(1)-dist;
+        // double distb = Xb(modexy)-Box(0);
+        // Xb(modexy) = Box(1)+distb;
+
+        double dist = std::fabs(X(modexy)-Box(0));
+        X(modexy) = Box(1)-dist+1.0;
+        double distb = Xb(modexy)-Box(0);
+        Xb(modexy) = Box(1)+distb+1.0;   
+
+    }
+    if(X(modexy)>Box(1))
+    {
+        // double dist = std::fabs(X(modexy)-Box(1));
+        // X(modexy) = Box(0)+dist;
+        // double distb = Xb(modexy)-Box(1);
+        // Xb(modexy) = Box(0)+distb;
+
+        double dist = std::fabs(X(modexy)-Box(1));
+        X(modexy) = Box(0)+dist-1.0;
+        double distb = Xb(modexy)-Box(1);
+        Xb(modexy) = Box(0)+distb-1.0;
+
+    }
+    
+
+
+}
+
+inline void Particle::LeaveReflect(int modexy1, Vec3_t &Box1)
+{
+    if(X(modexy1)<Box1(0))
+    {
+        X(modexy1) = Box1(0) + std::fabs(X(modexy1) - Box1(0));
+    }
+    if(X(modexy1)>Box1(1))
+    {
+        X(modexy1) = Box1(1) - std::fabs(X(modexy1) - Box1(1));
+    }
 }
 
 inline void Particle::Reflect(Vec3_t &C, double R, double Time)
