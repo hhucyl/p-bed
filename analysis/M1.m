@@ -1,7 +1,7 @@
 clear
 clc
-prefix = {'/media/user/PZ_Q/p-bed/1e4/'};
-num = [0:999];
+prefix = {'/media/user/9EAEE48CAEE45DF1/cyl_temp/p-bed-data/1e4/'};
+num = [0:100];
 name = strcat(prefix,'test_pbed_r1_',num2str(0,'%04d'),'.h5');
 nx = double(h5read(char(name),'/Nx'));
 ny = double(h5read(char(name),'/Ny'));

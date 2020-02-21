@@ -1,13 +1,15 @@
 import numpy as np
 import h5py as h5
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-prefix = "../"
+prefix = "/media/user/9EAEE48CAEE45DF1/cyl_temp/p-bed-data/1e4/"
 prefix = prefix + "test_pbed_r1_"
 ppy =  131
 R = 10
-num = np.arange(0,1+1)
+num = np.arange(0,100+1)
 
 name = prefix + str(num[0]).zfill(4) + ".h5"
 print(name)
@@ -25,7 +27,7 @@ print(ppy-1,gga[ppy-1])
 print(ppy,gga[ppy])
 
 
-layer = np.array([ppy-8*R,ppy-6*R,ppy-4*R,ppy-2*R,ppy])
+layer = np.array([66,88,110,ppy])
 
 kkk = [np.size(np.where(py<l)) for l in layer]
 colors = cm.rainbow(np.linspace(0,1,len(kkk)))
