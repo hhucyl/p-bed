@@ -43,10 +43,10 @@ for i in range(len(num)):
 	px = PX[0:-2:3]
 	py = PX[1:-1:3]
 	kkk1 = [np.size(np.where(py<l)) for l in layer]
-	ax = plt.subplot(111)
+	
 	for ii,c in zip(range(len(layer)),colors):
 		M[i,ii] = float(kkk1[ii])/float(kkk[ii])
-		ax.plot(np.sqrt(nn),M[:,ii],'*',color=c,label=layer[ii])
+		plt.plot(np.sqrt(nn),M[:,ii],'*',color=c,label=layer[ii])
 	plt.legend()
 
 	name = 'r' + str(num[i])+'.png'
