@@ -31,7 +31,7 @@ print(ppy,gga[ppy])
 
 
 layer = np.array([ppy-6*(R+2),ppy-4*(R+2),ppy-2*(R+2),ppy])
-layer = np.array([44,66,88,110,131]);
+layer = np.array([66,88,110,131]);
 M0 = np.zeros((len(layer))) + np.nan
 kkk = []
 for i in range(len(layer)):
@@ -62,7 +62,7 @@ Vv = np.zeros(len(layer)) + np.nan
 As = np.zeros(len(layer)) + np.nan
  
 for ii,c in zip(range(len(layer)),colors):
-	plt.plot(np.sqrt(nn),M[:,ii],'*',color=c,label=layer[ii])
+	plt.plot(np.sqrt(nn),M[:,ii],'o',color=c,label=layer[ii])
 	Z = np.polyfit(np.sqrt(nn),M[:,ii],1)
 	k1[ii] = -Z[0]
 	plt.plot(np.sqrt(nn),Z[0]*np.sqrt(nn)+Z[1],color=c)
