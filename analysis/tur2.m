@@ -1,10 +1,11 @@
 clear
 clc
 prefix_name = {'/media/user/PZ_Q/p-bed/1/','/home/user/p-bed/analysis/'};
-prefix_name = {'/media/user/PZ_Q/p-bed/1e4/'};
+prefix_name = {'G:\p-bed\1e4\'};
 num = [0:999];color = {'r','b'};
 ppy=109;
 ppy = 131;
+nu = 5e-4;
 for ii = 1:1
 for i=1:numel(num)
     
@@ -39,7 +40,8 @@ end
 
 uvs = us.*vs;
 figure(1)
-plot(mean(uvs,1))
+uvsy = mean(uvs,1);
+plot(uvsy)
 figure(2)
 uva = mean(uv,3);
 pcolor(uva)
@@ -53,7 +55,7 @@ py = 131;
 
 fi = (py*double(nx)-60*pi*8^2)/(py*double(nx));
 k = 5.6e-3*fi^3/(1-fi)^2*16*16;
-Rek = uu*sqrt(k)/0.0005
+Rek = uu*sqrt(k)/nu
 figure(4)
 subplot(311)
 kbed = 0.5.*(ubed+vbed);
@@ -71,6 +73,14 @@ subplot(313)
 plot(period,power)
 [mp,index] = max(power);
 T = getT(kbed)
+figure(5)
+du = zeros(ny,1);
+du(1:end-1) = uaa(2:end)-uaa(1:end-1);
+du(end) = 0;
+tau = -uvhasy'-uvsy'+nu.*du;
+plot(tau)
+uu1 = sqrt(max(tau/1.0))
+Rek1 = uu1*sqrt(k)/nu
 
 
 
