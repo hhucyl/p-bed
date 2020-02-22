@@ -1,7 +1,7 @@
 clear
 clc
 prefix_name = {'/media/user/PZ_Q/p-bed/1/','/home/user/p-bed/analysis/'};
-prefix_name = {'G:\p-bed\1e4\'};
+prefix_name = {'E:\workspace\p-bed\code\post\'};
 num = [0:999];color = {'r','b'};
 ppy=109;
 ppy = 131;
