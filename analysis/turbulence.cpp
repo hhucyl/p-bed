@@ -4,7 +4,7 @@
 
 int main()
 {
-    char const * TheFileKey = "/home/user/p-bed/test_pbed_r1";
+    char const * TheFileKey = "/media/user/9EAEE48CAEE45DF1/cyl_temp/p-bed-data/1e4/test_pbed_r1";
     char const * FileKey = "turbulence";
     String fn;
     int fileNum = 1000;

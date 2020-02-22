@@ -5,8 +5,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-# prefix = "/media/user/9EAEE48CAEE45DF1/cyl_temp/p-bed-data/1e4/"
-prefix = "../"
+prefix = "/media/user/9EAEE48CAEE45DF1/cyl_temp/p-bed-data/1e4/"
+#prefix = "../"
 prefix = prefix + "test_pbed_r1_"
 ppy =  131
 R = 10
@@ -28,7 +28,7 @@ print(ppy-1,gga[ppy-1])
 print(ppy,gga[ppy])
 
 
-layer = np.array([66,88,110,ppy])
+layer = np.array([ppy-6*R,ppy-4*R,ppy-2*R,ppy])
 M0 = np.zeros((len(layer))) + np.nan
 kkk = []
 for i in range(len(layer)):
