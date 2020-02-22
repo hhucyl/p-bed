@@ -86,3 +86,10 @@ plt.savefig('Deff',dpi=500)
 plt.clf()
 
 f.close()
+
+with open("Deff_1e4.txt","w") as f:
+	f.write(str(Dm)+ "\t Dm\n")
+	for l,d in zip(layer, Deff):
+		f.write(str(l)+" "+str(d)+"\t pos, Deff/Dm\n")
+	
+	

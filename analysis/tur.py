@@ -87,4 +87,12 @@ print("Rek1 ",Rek1)
 
 f.close()
 
+with open("Rek_1e4.txt","w") as f:
+	f.write(str(uu)+"\t uu based on reynolds stress\n")
+	f.write(str(uu1)+"\t uu1 based on tau\n")
+	f.write(str(fi)+"\t porosity\n")
+	f.write(str(k)+"\t k\n")
+	f.write(str(Rek)+ "\t Rek\n")
+	f.write(str(Rek1)+ "\t Rek1\n")
+
 
