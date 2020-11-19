@@ -31,7 +31,7 @@ inline void Domain::rwsolve_sub2(double dt)
         Pa2GridV(RWP,idx,VV);
         // std::cout<<222<<std::endl;
         RWP->Move(VV,idx,dt);
-        RWP->Leave1(modexy,Box);
+        RWP->Leave1(modexy,Box);;
         RWP->LeaveReflect(modexy1,Box1);
 
         
@@ -70,6 +70,105 @@ inline void Domain::rwsolve_sub2(double dt)
                 }
                 // std::cout<<2<<std::endl;
                 RWP->Leave1(modexy,Box);
+                RWP->LeaveReflect(modexy1,Box1);
+            }
+            if(Norm(P->X-RWP->X) < P->Rh)
+            {
+                RWP->X = RWP->Xb;
+            }
+            
+            if(Norm(GP->X-RWP->X) < GP->Rh)
+            {
+                RWP->X = RWP->Xb;
+            }
+
+            
+        }
+        
+        // std::cout<<444<<std::endl;
+        Pa2Grid(RWP,idc);
+        ix = idc[0];
+        iy = idc[1];
+        #pragma omp atomic
+            Con[ix][iy][0] += 1;
+
+    }
+
+}
+
+inline void Domain::rwsolve_sub3(double dt)
+{
+    // std::cout<<1<<std::endl;
+    if(Time<1e-6) std::cout<<"--- rwsolve_sub3 ---"<<std::endl;
+    #ifdef USE_OMP
+    #pragma omp parallel for schedule(static) num_threads(Nproc)
+    #endif
+    for(size_t ix=0; ix<Ndim(0); ++ix)
+    for(size_t iy=0; iy<Ndim(1); ++iy)
+    {
+        Con[ix][iy][0] = 0;
+    }
+
+    #ifdef USE_OMP
+    #pragma omp parallel for schedule(static) num_threads(Nproc)
+    #endif
+    for(int i=0;i<(int) RWParticles.size();++i)
+    {
+        RW::Particle *RWP = &RWParticles[i];
+        if(RWP->X(modexy)<=-100) continue;
+        std::vector<int> idc{-1,-1};
+       
+
+        
+        Vec3_t v0(0,0,0); 
+        std::vector<Vec3_t> VV{v0,v0,v0,v0};
+        std::vector<int> idx{-1,-1,-1,-1};
+        // std::cout<<111<<std::endl;
+        Pa2GridV(RWP,idx,VV);
+        // std::cout<<222<<std::endl;
+        RWP->Move(VV,idx,dt);
+        // RWP->Leave1(modexy,Box);
+        RWP->Leave2(modexy,Box);
+        RWP->LeaveReflect(modexy1,Box1);
+
+        
+        Pa2Grid(RWP,idc);
+        int ix = idc[0];
+        int iy = idc[1];
+        // std::cerr<<RWP->X(0)<<" "<<RWP->X(1)<<" "<<ix<<" "<<iy<<std::endl;
+        // if(ix<0 || ix>Ndim(0)-1) std::cout<<"x "<<ix<<std::endl;
+        // if(iy<0 || iy>Ndim(1)-1) std::cout<<"y "<<iy<<std::endl;
+        if(Check[ix][iy][0]>-0.5) 
+        {
+
+
+            int ip = Check[ix][iy][0];
+            DEM::Disk *P = &Particles[ip];
+            DEM::Disk *GP = &GhostParticles[ip];
+            if(Norm(P->X-RWP->X) < P->Rh)
+            {
+                if(Norm(P->X-RWP->Xb)>P->Rh)
+                {
+                    RWP->Reflect(P->X,P->Rh,Time);
+                }else{
+                    RWP->X = RWP->Xb;
+                }
+                // std::cout<<2<<std::endl;
+                // RWP->Leave1(modexy,Box);
+                RWP->Leave2(modexy,Box);
+                RWP->LeaveReflect(modexy1,Box1);
+            }
+            if(Norm(GP->X-RWP->X) < GP->Rh)
+            {
+                if(Norm(GP->X-RWP->Xb)>GP->Rh)
+                {
+                    RWP->Reflect(GP->X,GP->Rh,Time);
+                }else{
+                    RWP->X = RWP->Xb;
+                }
+                // std::cout<<2<<std::endl;
+                // RWP->Leave1(modexy,Box);
+                RWP->Leave2(modexy,Box);
                 RWP->LeaveReflect(modexy1,Box1);
             }
             if(Norm(P->X-RWP->X) < P->Rh)

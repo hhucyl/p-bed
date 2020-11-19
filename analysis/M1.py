@@ -7,10 +7,11 @@ import matplotlib.cm as cm
 
 prefix = "/media/user/9EAEE48CAEE45DF1/cyl_temp/p-bed-data/1e4/"
 prefix = "../../post/"
+prefix = "../"
 prefix = prefix + "test_pbed_r1_"
 ppy =  131
 R = 8
-num = np.arange(0,200+1)
+num = np.arange(0,730+1)
 Dm = 1.15e-6; 
 
 name = prefix + str(num[0]).zfill(4) + ".h5"
@@ -61,11 +62,12 @@ Vt = np.zeros(len(layer)) + np.nan
 Vv = np.zeros(len(layer)) + np.nan
 As = np.zeros(len(layer)) + np.nan
  
+tt = nn*1e2
 for ii,c in zip(range(len(layer)),colors):
-	plt.plot(np.sqrt(nn),M[:,ii],'o',color=c,label=layer[ii])
-	Z = np.polyfit(np.sqrt(nn),M[:,ii],1)
+	plt.plot(np.sqrt(tt),M[:,ii],'o',color=c,label=layer[ii])
+	Z = np.polyfit(np.sqrt(tt),M[:,ii],1)
 	k1[ii] = -Z[0]
-	plt.plot(np.sqrt(nn),Z[0]*np.sqrt(nn)+Z[1],color=c)
+	plt.plot(np.sqrt(tt),Z[0]*np.sqrt(tt)+Z[1],color=c)
 	Vs[ii] = np.sum(np.sum(ga[1:layer[ii],:]))
 	Vt[ii] = (layer[ii]*1.0-1.0)*Nx*1.0
 	Vv[ii] = Vt[ii] - Vs[ii]

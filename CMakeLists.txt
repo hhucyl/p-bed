@@ -32,6 +32,7 @@ SET(PROGS
     test_pbed_a
     test_pbed_cp
     test_reflect
+    test_prinos
 
 )
 

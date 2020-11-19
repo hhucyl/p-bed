@@ -213,7 +213,8 @@ public:
     void SolveRW(double Tf, double dtout, char const * TheFileKey, ptDFun_t ptSetup, ptDFun_t ptReport);
     void rwsolve_sub(double dt);
     void rwsolve_sub1(double dt);
-    void rwsolve_sub2(double dt);
+    void rwsolve_sub2(double dt);//periodic
+    void rwsolve_sub3(double dt);//runoff
     void Pa2Grid(RW::Particle *RWP,std::vector<int> &idc);
     void Pa2GridV(RW::Particle *RWP, std::vector<int> &idx, std::vector<Vec3_t> &VV);
     void CheckInside();

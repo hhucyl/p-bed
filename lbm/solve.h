@@ -294,7 +294,7 @@ inline void Domain::SolvePRW(double Tf, double dtout, char const * TheFileKey, p
         CalcProps();
 
         //trace particle
-        rwsolve_sub2(dt);
+        rwsolve_sub3(dt);
 
         Time += 1;
     }

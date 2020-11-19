@@ -24,6 +24,7 @@ class Particle
     void Move(std::vector<Vec3_t> &VV, std::vector<int> &idx, double dt);
     void Leave(int modexy, Vec3_t &Box);
     void Leave1(int modexy, Vec3_t &Box);
+    void Leave2(int modexy, Vec3_t &Box);//leave and set as -200
     void LeaveReflect(int modexy1, Vec3_t &Box1);
     void Reflect(Vec3_t &C, double R, double Time);
 };
@@ -127,6 +128,26 @@ inline void Particle::Leave1(int modexy, Vec3_t &Box)
         X(modexy) = Box(0)+dist-1.0;
         double distb = Xb(modexy)-Box(1);
         Xb(modexy) = Box(0)+distb-1.0;
+
+    }
+    
+
+
+}
+
+inline void Particle::Leave2(int modexy, Vec3_t &Box)
+{
+    if(1000*X(modexy)<1000*Box(0))
+    {   
+        X(modexy) = -200;
+        Xb(modexy) = -200;   
+
+    }
+    if(X(modexy)>Box(1))
+    {
+
+        X(modexy) = -200;
+        Xb(modexy) = -200;
 
     }
     
