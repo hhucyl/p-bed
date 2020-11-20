@@ -240,6 +240,7 @@ int main (int argc, char **argv) try
     double dtout = 1;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
+    dom.Sc = 0.17； 
     //solving
     dom.SolveP( Tf, dtout, "test_pbed1", Setup, NULL);
     

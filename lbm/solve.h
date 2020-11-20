@@ -127,8 +127,8 @@ inline void Domain::SolveP(double Tf, double dtout, char const * TheFileKey, ptD
         }
 
         //collide and streaming
-        // CollideSRTGamma();
-        CollideTRTGamma();
+        CollideSRTGamma();
+        // CollideTRTGamma();
         Stream();
         BounceBack(false);
         CalcProps();
