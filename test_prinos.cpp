@@ -73,6 +73,12 @@ void Setup(LBM::Domain &dom, void *UD)
     // std::cout<<g(0)<<std::endl;
 }
 
+double random(double a, double b)
+{
+    double rn = std::rand()/((double) RAND_MAX);
+    return (b-a)*rn+a;
+}
+
 
 void Initial(LBM::Domain &dom, void *UD)
 {
@@ -103,7 +109,8 @@ void Initial(LBM::Domain &dom, void *UD)
             double Y = yy-py;
             // double uy = dat.g/(2.0*dat.nu)*(H*(yy-py) - (yy-py)*(yy-py)); 
             double uy = P*(dat.H*Y - 0.5*Y*Y); 
-            Vec3_t vtemp(uy, 0, 0);
+            double uuy = random(uy*0.9,uy*1.1);
+            Vec3_t vtemp(uuy, random(-1e-3,1e-3)*uuy, 0);
             // Vec3_t vtemp((double) dat.vb, 0, 0);
             dom.Rho[ix][iy][0] = 1.0;
             dom.Vel[ix][iy][0] = vtemp;
@@ -121,11 +128,7 @@ void Initial(LBM::Domain &dom, void *UD)
 
 
 
-double random(double a, double b)
-{
-    double rn = std::rand()/((double) RAND_MAX);
-    return (b-a)*rn+a;
-}
+
   
 int main (int argc, char **argv) try
 {
@@ -138,7 +141,7 @@ int main (int argc, char **argv) try
     size_t nx = std::ceil(2.5*Dn*3);
     size_t ny = H + std::ceil(5.5*Dn);
     std::cout<<"nx = "<<nx<<" ny = "<<ny<<" H = "<<H<<std::endl;
-    double nu = 5e-4;
+    double nu = 1e-4;
     double ratio_l = (double) Dn/0.01; //Ll/Lr
     double ratio_nu = nu/1e-6; // nul/nur
     double ratio_t = ratio_l*ratio_l/ratio_nu; // Tl/Tr
@@ -240,7 +243,7 @@ int main (int argc, char **argv) try
     double dtout = 1;
     dom.Box = 0.0,(double) nx-1, 0.0;
     dom.modexy = 0;
-    dom.Sc = 0.17； 
+    dom.Sc = 0.17; 
     //solving
     dom.SolveP( Tf, dtout, "test_pbed1", Setup, NULL);
     
